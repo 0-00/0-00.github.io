@@ -6,7 +6,7 @@
             let boxX = 12;
             let boxY = 12;
 
-            let control = false;
+            let shift = false;
 
             const state = {
                 EDIT : 'edit', 
@@ -33,7 +33,11 @@
                 SUB: "-",
                 MUL: "×",
                 DIV: "/",
+                MOD: "%",
                 EMPTY_STACK: "_",
+                ZERO_TEST: "?",
+                CLONE_TOP: "☍",
+                POP: "^",
                 PRINT_CHAR: "p",
             };
 
@@ -68,6 +72,18 @@
                     s += stack[i] + " | "
                 }
                 document.getElementById("stack").innerHTML = s;
+            }
+
+            function rotate_clockwise(){
+                if (direction == token.RIGHT) {
+                    direction = token.DOWN;
+                } else if (direction == token.DOWN) {
+                    direction = token.LEFT;
+                } else if (direction == token.LEFT) {
+                    direction = token.UP;
+                } else if (direction == token.UP) {
+                    direction = token.RIGHT;
+                }
             }
 
             function step() {
@@ -131,6 +147,13 @@
                             stack.push(Math.floor(b*a));
                         }
                         break;
+                    case token.MOD:
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b % a);
+                        }
+                        break;
                     case token.PRINT_CHAR:
                         if (stack.length > 0){
                             a = stack.pop();
@@ -148,18 +171,22 @@
                         break;
                     case token.DOWN:
                         direction = tok;
+                        break;
                     case token.EMPTY_STACK:
                         if (stack.length == 0) {
-                            if (direction == token.RIGHT) {
-                                direction = token.DOWN;
-                            } else if (direction == token.DOWN) {
-                                direction = token.LEFT;
-                            } else if (direction == token.LEFT) {
-                                direction = token.UP;
-                            } else if (direction == token.UP) {
-                                direction = token.RIGHT;
-                            }
+                            rotate_clockwise();
                         }
+                        break;
+                    case token.ZERO_TEST:
+                        if (stack[stack.length-1] == 0) {
+                            rotate_clockwise();
+                        }
+                        break;
+                    case token.CLONE_TOP:
+                        stack.push(stack[stack.length-1]);
+                        break;
+                    case token.POP:
+                        stack.pop();
                         break;
 
                 }
@@ -212,10 +239,10 @@
                 document.body.addEventListener('keydown', (e) => {
                     
                     if (current_state == state.EDIT) {
-                        if (e.key == "Control") {
-                            control = true;
+                        if (e.key == "Shift") {
+                            shift = true;
                         }
-                        if (control) {
+                        if (shift) {
                             if (e.key == "ArrowLeft") {
                                 tokens[cursorY*boxY+cursorX] = token.LEFT;
                             }
@@ -227,6 +254,9 @@
                             }
                             else if (e.key == "ArrowDown") {
                                 tokens[cursorY*boxY+cursorX] = token.DOWN;
+                            }
+                            else if (e.key == "D") {
+                                tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
                             }
                         }
                         if (e.key == "ArrowLeft") {
@@ -243,6 +273,12 @@
                         }
                         switch (e.key) {
                             case " ":
+                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
+                                break;
+                            case "Delete":
+                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
+                                break;
+                            case "Backspace":
                                 tokens[cursorY*boxY+cursorX] = token.EMPTY;
                                 break;
                             case "0":
@@ -281,6 +317,9 @@
                             case "/":
                                 tokens[cursorY*boxY+cursorX] = token.DIV;
                                 break;
+                            case "%":
+                                tokens[cursorY*boxY+cursorX] = token.MOD;
+                                break;
                             case "+":
                                 tokens[cursorY*boxY+cursorX] = token.ADD;
                                 break;
@@ -289,6 +328,12 @@
                                 break;
                             case "_":
                                 tokens[cursorY*boxY+cursorX] = token.EMPTY_STACK;
+                                break;
+                            case "?":
+                                tokens[cursorY*boxY+cursorX] = token.ZERO_TEST;
+                                break;
+                            case "^":
+                                tokens[cursorY*boxY+cursorX] = token.POP;
                                 break;
                             case "p":
                                 tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
@@ -331,8 +376,8 @@
                 );
 
                 document.body.addEventListener('keyup', (e) => {
-                    if (e.key == "Control") {
-                        control = false;
+                    if (e.key == "Shift") {
+                        shift = false;
                     }
                     drawbox();
                     logMessage(`Key "${e.key}" released  [event: keyup]`);
@@ -390,13 +435,13 @@
                         "↑,↓,←,→"
                     </span> 
                     <span class="help">
-                        (ctrl+arrow keys)
+                        (shift+arrow keys)
                     </span>
                     </br>Changes the direction of the pointer.
                 </li>
                 <li>
                     <span style='font-weight: bold'>
-                        "×,/,-,+"
+                        "×,/,-,+,%"
                     </span> 
                     </br>Pops top entry (a) and second from top entry (b) and computes b op a, and pushes the result to the stack.
                 </li>
@@ -411,6 +456,27 @@
                         "_"
                     </span> 
                     </br>Tests whether the stack is empty. If any items remain in the stack, nothing happens. If it is empty, the pointer turns 90 degrees clockwise.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "?"
+                    </span> 
+                    </br>Peeks at the top of the stack and tests for a zero value. If non-zero, nothing happens. If it is zero, the pointer turns 90 degrees clockwise.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "^"
+                    </span> 
+                    </br>Pops the top element off the stack.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "☍"
+                    </span> 
+                    <span class="help">
+                        (shift+d)
+                    </span>
+                    </br>Peeks at the top of the stack and pushes the same value to the top of the stack.
                 </li>
             </ul>   
         </div>
