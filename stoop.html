@@ -1,0 +1,426 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            let cursorX = 0;
+            let cursorY = 0;
+            let boxX = 12;
+            let boxY = 12;
+
+            let control = false;
+
+            const state = {
+                EDIT : 'edit', 
+                RUN : 'run',
+            }
+
+            const token = {
+                UP : "↑",
+                DOWN : "↓",
+                LEFT : "←",
+                RIGHT : "→",
+                EMPTY: "&nbsp",
+                ZERO: "0",
+                ONE: "1",
+                TWO: "2",
+                THREE: "3",
+                FOUR: "4",
+                FIVE: "5",
+                SIX: "6",
+                SEVEN: "7",
+                EIGHT: "8",
+                NINE: "9",
+                ADD: "+",
+                SUB: "-",
+                MUL: "×",
+                DIV: "/",
+                EMPTY_STACK: "_",
+                PRINT_CHAR: "p",
+            };
+
+            current_state = state.EDIT;
+
+            var tokens = [];
+            for (let i = 0; i<boxY; i++) {
+                for (let j = 0; j<boxX; j++) {
+                    tokens[i*boxY+j] = token.EMPTY;
+                }
+            }
+
+            function mod(n, m) {
+                return ((n % m) + m) % m;
+            }
+
+            direction = token.RIGHT;
+            stack = [];
+
+            function reset() {
+                direction = token.RIGHT;
+                stack = [];
+                cursorX = 0;
+                cursorY = 0;
+                document.getElementById("stack").innerHTML = "";
+                document.getElementById("output").innerHTML = "";
+            }
+
+            function update_stack() {
+                s = "| ";
+                for (let i = 0; i < stack.length; i++) {
+                    s += stack[i] + " | "
+                }
+                document.getElementById("stack").innerHTML = s;
+            }
+
+            function step() {
+                tok = tokens[cursorY*boxY+cursorX]
+                switch(tok) {
+                    case token.ZERO:
+                        stack.push(0);
+                        break;
+                    case token.ONE:
+                        stack.push(1);
+                        break;
+                    case token.TWO:
+                        stack.push(2);
+                        break;
+                    case token.THREE:
+                        stack.push(3);
+                        break;
+                    case token.FOUR:
+                        stack.push(4);
+                        break;
+                    case token.FIVE:
+                        stack.push(5);
+                        break;
+                    case token.SIX:
+                        stack.push(6);
+                        break;
+                    case token.SEVEN:
+                        stack.push(7);
+                        break;
+                    case token.EIGHT:
+                        stack.push(8);
+                        break;
+                    case token.NINE:
+                        stack.push(9);
+                        break;
+                    case token.ADD:
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b+a);
+                        }
+                        break;
+                    case token.SUB:
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b-a);
+                        }
+                        break;
+                    case token.MUL:
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b*a);
+                        }
+                        break;
+                    case token.DIV:
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(Math.floor(b*a));
+                        }
+                        break;
+                    case token.PRINT_CHAR:
+                        if (stack.length > 0){
+                            a = stack.pop();
+                            document.getElementById("output").innerHTML += String.fromCharCode(a);
+                        }
+                        break;
+                    case token.RIGHT:
+                        direction = tok;
+                        break;
+                    case token.LEFT:
+                        direction = tok;
+                        break;
+                    case token.UP:
+                        direction = tok;
+                        break;
+                    case token.DOWN:
+                        direction = tok;
+                    case token.EMPTY_STACK:
+                        if (stack.length == 0) {
+                            if (direction == token.RIGHT) {
+                                direction = token.DOWN;
+                            } else if (direction == token.DOWN) {
+                                direction = token.LEFT;
+                            } else if (direction == token.LEFT) {
+                                direction = token.UP;
+                            } else if (direction == token.UP) {
+                                direction = token.RIGHT;
+                            }
+                        }
+                        break;
+
+                }
+                update_stack();
+                next_position();
+            }
+
+            function next_position() {
+                switch(direction) {
+                    case token.RIGHT:
+                        cursorX += 1;
+                        break;
+                    case token.LEFT:
+                        cursorX -= 1;
+                        break;
+                    case token.UP:
+                        cursorY -= 1;
+                        break;
+                    case token.DOWN:
+                        cursorY += 1;
+                        break;
+                }
+            }
+
+
+            window.onload = function() {
+                let textarea = document.getElementById("editor");
+
+                drawbox();
+
+                function logMessage(message) {
+                    console.log(message);
+                }
+
+                function drawbox() {
+                    s = ""
+                    for (let i = 0; i<boxY; i++) {
+                        for (let j = 0; j<boxX; j++) {
+                            if (i == cursorY && j == cursorX) {
+                                s += "<span class=\"tile selected\">" + tokens[i*boxY+j] + "</span>";
+                            } else {
+                                s += "<span class=\"tile\">" + tokens[i*boxY+j] + "</span>";
+                            }
+                        }
+                        s += "</br>";
+                    }
+                    textarea.innerHTML = s
+                }
+
+                document.body.addEventListener('keydown', (e) => {
+                    
+                    if (current_state == state.EDIT) {
+                        if (e.key == "Control") {
+                            control = true;
+                        }
+                        if (control) {
+                            if (e.key == "ArrowLeft") {
+                                tokens[cursorY*boxY+cursorX] = token.LEFT;
+                            }
+                            else if (e.key == "ArrowRight") {
+                                tokens[cursorY*boxY+cursorX] = token.RIGHT;
+                            }
+                            else if (e.key == "ArrowUp") {
+                                tokens[cursorY*boxY+cursorX] = token.UP;
+                            }
+                            else if (e.key == "ArrowDown") {
+                                tokens[cursorY*boxY+cursorX] = token.DOWN;
+                            }
+                        }
+                        if (e.key == "ArrowLeft") {
+                                cursorX = mod(cursorX - 1, boxX);
+                            }
+                            else if (e.key == "ArrowRight") {
+                                cursorX = mod(cursorX + 1, boxX);
+                            }
+                            else if (e.key == "ArrowUp") {
+                                cursorY = mod(cursorY - 1, boxY);
+                            }
+                            else if (e.key == "ArrowDown") {
+                                cursorY = mod(cursorY + 1, boxY);
+                        }
+                        switch (e.key) {
+                            case " ":
+                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
+                                break;
+                            case "0":
+                                tokens[cursorY*boxY+cursorX] = token.ZERO;
+                                break;
+                            case "1":
+                                tokens[cursorY*boxY+cursorX] = token.ONE;
+                                break;
+                            case "2":
+                                tokens[cursorY*boxY+cursorX] = token.TWO;
+                                break;
+                            case "3":
+                                tokens[cursorY*boxY+cursorX] = token.THREE;
+                                break;
+                            case "4":
+                                tokens[cursorY*boxY+cursorX] = token.FOUR;
+                                break;
+                            case "5":
+                                tokens[cursorY*boxY+cursorX] = token.FIVE;
+                                break;
+                            case "6":
+                                tokens[cursorY*boxY+cursorX] = token.SIX;
+                                break;
+                            case "7":
+                                tokens[cursorY*boxY+cursorX] = token.SEVEN;
+                                break;
+                            case "8":
+                                tokens[cursorY*boxY+cursorX] = token.EIGHT;
+                                break;
+                            case "9":
+                                tokens[cursorY*boxY+cursorX] = token.NINE;
+                                break;
+                            case "*":
+                                tokens[cursorY*boxY+cursorX] = token.MUL;
+                                break;
+                            case "/":
+                                tokens[cursorY*boxY+cursorX] = token.DIV;
+                                break;
+                            case "+":
+                                tokens[cursorY*boxY+cursorX] = token.ADD;
+                                break;
+                            case "-":
+                                tokens[cursorY*boxY+cursorX] = token.SUB;
+                                break;
+                            case "_":
+                                tokens[cursorY*boxY+cursorX] = token.EMPTY_STACK;
+                                break;
+                            case "p":
+                                tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
+                                break;
+                        }
+                        drawbox();
+                    }
+                    
+                    else if (current_state == state.RUN) {
+                        switch(e.key){
+                            case " ":
+                                console.log("step.")
+                                step();
+                                break;
+                            case "r":
+                                reset();
+                                break;
+                        }
+                    } 
+                    if (e.key == "Escape") {
+                        if (current_state == state.EDIT){
+                            current_state = state.RUN;
+                            document.getElementById("edit_tab").classList.remove("selected");
+                            document.getElementById("run_tab").classList.add("selected");
+                            document.getElementById("edit_info").style.display = 'none';
+                            document.getElementById("run_info").style.display = 'block';
+                            reset();
+                        } else if (current_state == state.RUN){
+                            current_state = state.EDIT;
+                            document.getElementById("edit_tab").classList.add("selected");
+                            document.getElementById("run_tab").classList.remove("selected");
+                            document.getElementById("edit_info").style.display = 'block';
+                            document.getElementById("run_info").style.display = 'none';
+                            reset();
+                        }
+                    }
+
+                    logMessage(`Key "${e.key}" pressed  [event: keydown]`);
+                    }
+                );
+
+                document.body.addEventListener('keyup', (e) => {
+                    if (e.key == "Control") {
+                        control = false;
+                    }
+                    drawbox();
+                    logMessage(`Key "${e.key}" released  [event: keyup]`);
+                });
+            }
+            
+        </script>
+        <style>
+            body {
+                background-color: black;
+                font-family: "Courier New", Courier, monospace;
+                color: white;
+            }
+
+            #editor {
+                border-width: 1px;
+                border-color: white;
+                border-style: double;
+                width: fit-content;
+            }
+
+            .selected {
+                background-color: white;
+                color: black;
+            }
+
+            .tile {
+                text-align:center;
+                margin-left: 5px;
+                margin-right: 5px;
+                font-weight: bold;
+            }
+
+            .help {
+                color:gray;
+            }
+        </style>
+    </head>
+    <body>
+        <div><span id="edit_tab" class="selected">EDIT</span>|<span id="run_tab"n>RUN</span> <span class="help">(ESC to toggle)</span></div>
+        </hr>
+        <div id="editor"></div>
+        </br>
+        <div id="edit_info"> 
+            <span>Accepted Tokens Descriptions:</span>
+            <ul>
+                <li>
+                    <span style='font-weight: bold'>
+                        "0-9"
+                    </span>
+                    </br>Pushes an integer values onto the stack.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "↑,↓,←,→"
+                    </span> 
+                    <span class="help">
+                        (ctrl+arrow keys)
+                    </span>
+                    </br>Changes the direction of the pointer.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "×,/,-,+"
+                    </span> 
+                    </br>Pops top entry (a) and second from top entry (b) and computes b op a, and pushes the result to the stack.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "p"
+                    </span> 
+                    </br>Pops top entry from the stack and outputs the associated ASCII character.
+                </li>
+                <li>
+                    <span style='font-weight: bold'>
+                        "_"
+                    </span> 
+                    </br>Tests whether the stack is empty. If any items remain in the stack, nothing happens. If it is empty, the pointer turns 90 degrees clockwise.
+                </li>
+            </ul>   
+        </div>
+        <div id="run_info" style="display: none;">
+            <span class="help">(SPACE to step, R to reset)</span></br>
+            <span>DIRECTION: </span><span id="direction">→</span></br>
+            <span>STACK:</span>
+            <div id="stack">&nbsp</div>
+            <span>OUTPUT:</span>
+            <div id="output"></div>
+        </div>
+    </body>
+</html>
