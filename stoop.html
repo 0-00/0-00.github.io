@@ -1,12 +1,15 @@
 <html>
     <head>
+        <title>STÖÖP (Stack-based lööpy language)</title>
         <script type="text/javascript">
             let cursorX = 0;
             let cursorY = 0;
             let boxX = 12;
             let boxY = 12;
 
+            let ctrl = false;
             let shift = false;
+            let run = false;
 
             const state = {
                 EDIT : 'edit', 
@@ -58,6 +61,7 @@
             stack = [];
 
             function reset() {
+                run = false;
                 direction = token.RIGHT;
                 stack = [];
                 cursorX = 0;
@@ -209,9 +213,10 @@
                         cursorY += 1;
                         break;
                 }
+                run = run && cursorX > -1 && cursorX < boxX && cursorY > -1 && cursorY < boxY 
             }
 
-
+            setInterval(function(){ if (run) { step(); } }, 1);
             window.onload = function() {
                 let textarea = document.getElementById("editor");
 
@@ -241,6 +246,18 @@
                     if (current_state == state.EDIT) {
                         if (e.key == "Shift") {
                             shift = true;
+                        }
+                        if (e.key == "Control") {
+                            ctrl = true;
+                        }
+                        if (ctrl) {
+                            if (e.key == "c") {
+                                s = "";
+                                for (let i = 0; i<tokens.length; i++) {
+                                    s += tokens[i]
+                                }
+                                console.log(s);
+                            }
                         }
                         if (shift) {
                             if (e.key == "ArrowLeft") {
@@ -348,6 +365,10 @@
                                 console.log("step.")
                                 step();
                                 break;
+                            case "Enter":
+                                console.log("step.")
+                                run = !run;
+                                break;
                             case "r":
                                 reset();
                                 break;
@@ -422,13 +443,17 @@
         <div id="editor"></div>
         </br>
         <div id="edit_info"> 
+            <div>
+                <span><b>STÖÖP (Stack-based lööpy language)</b></span>
+                <p><b>STÖÖP</b> </p>
+            </div>
             <span>Accepted Tokens Descriptions:</span>
             <ul>
                 <li>
                     <span style='font-weight: bold'>
                         "0-9"
                     </span>
-                    </br>Pushes an integer values onto the stack.
+                    </br>Pushes an integer value onto the stack.
                 </li>
                 <li>
                     <span style='font-weight: bold'>
@@ -481,7 +506,7 @@
             </ul>   
         </div>
         <div id="run_info" style="display: none;">
-            <span class="help">(SPACE to step, R to reset)</span></br>
+            <span class="help">(ENTER to run/pause, SPACE to step, R to reset)</span></br>
             <span>DIRECTION: </span><span id="direction">→</span></br>
             <span>STACK:</span>
             <div id="stack">&nbsp</div>
