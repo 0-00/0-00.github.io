@@ -1,0 +1,198 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: black;
+            } 
+
+            canvas{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);               
+            }
+        </style>
+        <script type="text/javascript" src="cp437.js"></script>
+        <script>
+            var fontsheetX = 16;
+            var fontsheetY = 16;
+            var fontsizeX = 10;
+            var fontsizeY = 10;
+            var consoleX = 72;
+            var consoleY = 40;
+            var scale = 2;
+
+            function draw_char (ctx, textPosX, textPosY, char_index, color="white", highlight="black", pixeloffsetX=0, pixeloffsetY=0) {
+                ctx.fillStyle = highlight;
+                ctx.fillRect(
+                    (textPosX * fontsizeX + pixeloffsetX) * scale, 
+                    (textPosY * fontsizeY + pixeloffsetY) * scale, 
+                    scale * fontsizeX, 
+                    scale * fontsizeY
+                );
+                ctx.fillStyle = color;
+
+                for (var y = 0; y < fontsizeY; y++) {
+                    for (var x = 0; x < fontsizeX; x++) {
+                        if (cp437[char_index][x + y * fontsizeY] == 1) {
+                            var posX = textPosX * fontsizeX + x + pixeloffsetX;
+                            var posY = textPosY * fontsizeY + y + pixeloffsetY;
+                            ctx.fillRect(posX * scale, posY * scale, scale, scale);
+                        }
+                    }
+                }
+            }
+
+            function draw_text (ctx, textPosX, textPosY, text, color="white", highlight="black") {
+                for (var i = 0; i < text.length; i++) {
+                    draw_char(ctx, textPosX + i, textPosY, text.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
+                }
+            }
+
+            // function draw_char (ctx, font, textPosX, textPosY, charX, charY) {
+            //     ctx.drawImage(
+            //         font, 
+            //         charX * fontsizeX, 
+            //         charY * fontsizeY, 
+            //         fontsizeX, 
+            //         fontsizeY, 
+            //         textPosX * fontsizeX, 
+            //         textPosY * fontsizeY, 
+            //         fontsizeX, 
+            //         fontsizeY);
+            // }
+
+            function draw_box_single(ctx, minX, minY, maxX, maxY) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, minY, 196); // ─
+                    draw_char(ctx, i, maxY, 196); // ─
+                }
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, minX, i, 179); // │
+                    draw_char(ctx, maxX, i, 179); // │
+                }
+                draw_char(ctx, minX, minY, 218); // ┌
+                draw_char(ctx, maxX, minY, 191); // ┐
+                draw_char(ctx, minX, maxY, 192); // └
+                draw_char(ctx, maxX, maxY, 217); // ┘
+            }
+
+            function draw_box_double(ctx, minX, minY, maxX, maxY) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, minY, 205); // ═
+                    draw_char(ctx, i, maxY, 205); // ═
+                }
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, minX, i, 186); // ║
+                    draw_char(ctx, maxX, i, 186); // ║
+                }
+                draw_char(ctx, minX, minY, 201); // ╔
+                draw_char(ctx, maxX, minY, 187); // ╗
+                draw_char(ctx, minX, maxY, 200); // ╚
+                draw_char(ctx, maxX, maxY, 188); // ╝
+            }
+
+            function draw_box_horizontal_divide(ctx, y, minX, maxX) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, y, 196); // ─
+                    draw_char(ctx, i, y, 196); // ─
+                }
+                draw_char(ctx, minX, y, 195); // 
+                draw_char(ctx, maxX, y, 180); // 
+            }
+
+            function draw_box_vertical_divide(ctx, x, minY, maxY) {
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, x, i, 179); // │
+                    draw_char(ctx, x, i, 179); // │
+                }
+                draw_char(ctx, x, minY, 209); // 
+                draw_char(ctx, x, maxY, 207); // 
+            }
+
+            window.onload = function() {
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+
+                c.width = consoleX * fontsizeX * scale;
+                c.height = consoleY * fontsizeY * scale;
+                draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
+                draw_box_vertical_divide(ctx, 17, 0, consoleY - 1);
+                draw_box_vertical_divide(ctx, 23, 0, consoleY - 1);
+                draw_text(ctx, 18, 1, "stack");
+                draw_box_horizontal_divide(ctx, 2, 17, 23);
+                draw_text(ctx, 18, 3, " xFF");
+                draw_text(ctx, 18, 4, " xEE");
+                draw_text(ctx, 18, 5, " xDD");
+                draw_text(ctx, 18, 6, " xCC");
+                draw_text(ctx, 18, 7, " xBB");
+                draw_text(ctx, 18, 8, " xAA");
+                draw_text(ctx, 18, 9, " x99");
+                draw_text(ctx, 18, 10, " x88");
+                draw_text(ctx, 18, 11, " x77");
+                draw_text(ctx, 18, 12, " x66");
+                draw_text(ctx, 18, 13, " x55");
+                draw_text(ctx, 18, 14, " x44");
+                draw_text(ctx, 18, 15, " x33");
+                draw_text(ctx, 18, 16, " x22");
+                draw_text(ctx, 18, 17, " x11");
+                draw_text(ctx, 18, 18, " x00");
+                draw_box_single(ctx, 2, 2, 15, 15);
+                for (var i = 0; i < 12; i++) {
+                    for (var j = 0; j < 12; j++) {
+                        var rand = Math.floor(Math.random() * 256);
+                        draw_char(ctx, 3 + i, 3 + j, rand);
+                    }
+                }
+                draw_text(ctx, 2, 17, "DIR:");
+                draw_char(ctx, 6, 17, 25)
+                draw_text(ctx, 2, 19, "ENTER:Run/Stop", color='gray');
+                draw_text(ctx, 2, 20, "SPACE:Step", color='gray');
+                draw_text(ctx, 2, 21, "R:    Reset", color='gray');
+                // for (var i = 0; i < 16; i++) {
+                //     for (var j = 0; j < 16; j++) {
+                //         draw_char(ctx, 33 + j, 3 + i, i * 16 + j);
+                //     }
+                // }
+                // for (var i = 0; i < 16; i++) {
+                //     hex = 48 + i;
+                //     if (hex > 57) {
+                //         hex += 7;
+                //     }
+                //     draw_char(ctx, 33 + i, 2, hex, color='white', highlight='blue');
+                // }
+                // for (var i = 0; i < 16; i++) {
+                //     hex = 48 + i;
+                //     if (hex > 57) {
+                //         hex += 7;
+                //     }
+                //     draw_char(ctx, 32, 3 + i, hex, color='white', highlight='blue');
+                //     draw_text(ctx, 32, 2, " ", color='white', highlight='blue');
+                // }
+                for (var i = 0; i < consoleX; i++) {
+                    draw_text(ctx, i, 0, " ", color='white', highlight='white');
+                    draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
+                }
+                draw_text(ctx, 25, 2, "Problem 1 - The Basics");
+                draw_text(ctx, 25, 4, "A STOOP program has a pointer which moves in a given", color='green');
+                draw_text(ctx, 25, 5, "direction, manipulating the stack as it evaluates", color='green');
+                draw_text(ctx, 25, 6, "commands. The program terminates when the pointer leaves", color='green');
+                draw_text(ctx, 25, 7, "the square.", color='green');
+                draw_text(ctx, 25, 9, "Write a program that takes numbers (0-9) from the stack", color='green');
+                draw_text(ctx, 25, 10, "and prints the associated ASCII number.", color='green');
+                draw_text(ctx, 25, 12, "You may  find the following commands helpful:", color='green');
+                draw_text(ctx, 25, 14, "+: Pops the top two elements from the stack, computes", color='green');
+                draw_text(ctx, 25, 15, "   the sum, and places the result on the stack", color='green');
+                draw_text(ctx, 25, 17, "*: Pops the top two elements from the stack, computes", color='green');
+                draw_text(ctx, 25, 18, "   the product, and places the result on the stack", color='green');
+                draw_text(ctx, 25, 20, "p: Pops the top of the stack and prints the associated ", color='green');
+                draw_text(ctx, 25, 21, "   ASCII value", color='green');
+                draw_text(ctx, 25, 23, "_: Checks if the stack is empty. If so, the pointer is ", color='green');
+                draw_text(ctx, 25, 24, "   rotated clockwise. Otherwise, nothing happens", color='green');
+            };
+        </script>
+    </head>
+    <body>
+        <canvas id="myCanvas"></canvas>
+    </body>
+</html>
