@@ -16,32 +16,186 @@
                 RUN : 'run',
             }
 
+            const dir = {
+                UP : 0, DOWN : 1, LEFT : 2, RIGHT : 3
+            }
+
             const token = {
-                UP : "↑",
-                DOWN : "↓",
-                LEFT : "←",
-                RIGHT : "→",
-                EMPTY: "&nbsp",
-                ZERO: "0",
-                ONE: "1",
-                TWO: "2",
-                THREE: "3",
-                FOUR: "4",
-                FIVE: "5",
-                SIX: "6",
-                SEVEN: "7",
-                EIGHT: "8",
-                NINE: "9",
-                ADD: "+",
-                SUB: "-",
-                MUL: "×",
-                DIV: "/",
-                MOD: "%",
-                EMPTY_STACK: "_",
-                ZERO_TEST: "?",
-                CLONE_TOP: "☍",
-                POP: "^",
-                PRINT_CHAR: "p",
+                UP : {
+                        html: "↑",
+                        action: function() {
+                            direction = tok;
+                        },
+                    },
+                DOWN : {
+                        html: "↓",
+                        action: function() {
+                            direction = tok;
+                        },
+                    },
+                LEFT : {
+                        html: "←",
+                        action: function() {
+                            direction = tok;
+                        },
+                    },
+                RIGHT : {
+                        html: "→",
+                        action: function() {
+                            direction = tok;
+                        },
+                    },
+                EMPTY: {
+                    html: "&nbsp",
+                    action: function() {},
+                },
+                ZERO: {
+                    html: "0",
+                    action: function() {
+                        stack.push(0);
+                    },
+                },
+                ONE: {
+                    html: "1",
+                    action: function() {
+                        stack.push(1);
+                    },
+                },
+                TWO: {
+                    html: "2",
+                    action: function() {
+                        stack.push(2);
+                    },
+                },
+                THREE: {
+                    html: "3",
+                    action: function() {
+                        stack.push(3);
+                    },
+                },
+                FOUR: {
+                    html: "4",
+                    action: function() {
+                        stack.push(4);
+                    },
+                },
+                FIVE: {
+                    html: "5",
+                    action: function() {
+                        stack.push(5);
+                    },
+                },
+                SIX: {
+                    html: "6",
+                    action: function() {
+                        stack.push(6);
+                    },
+                },
+                SEVEN: {
+                    html: "7",
+                    action: function() {
+                        stack.push(7);
+                    },
+                },
+                EIGHT: {
+                    html: "8",
+                    action: function() {
+                        stack.push(8);
+                    },
+                },
+                NINE: {
+                    html: "9",
+                    action: function() {
+                        stack.push(9);
+                    },
+                },
+                ADD: {
+                    html: "+",
+                    action: function() {
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b+a);
+                        }
+                    },
+                },
+                SUB: {
+                    html: "-",
+                    action: function() {
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b-a);
+                        }
+                    },
+                },
+                MUL: {
+                    html: "×",
+                    action: function() {
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b*a);
+                        }
+                    },
+                },
+                DIV: {
+                    html: "/",
+                    action: function() {
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(Math.floor(b/a));
+                        }
+                    },
+                },
+                MOD: {
+                    html: "%",
+                    action: function() {
+                        if (stack.length > 1){
+                            a = stack.pop();
+                            b = stack.pop();
+                            stack.push(b % a);
+                        }
+                    },
+                },
+                EMPTY_STACK: {
+                    html: "_",
+                    action: function() {
+                        if (stack.length == 0) {
+                            rotate_clockwise();
+                        }
+                    },
+                },
+                ZERO_TEST: {
+                    html: "?",
+                    action: function() {
+                        if (stack[stack.length-1] == 0) {
+                            rotate_clockwise();
+                        }
+                    },
+                },
+                CLONE_TOP: {
+                    html: "☍",
+                    action: function() {
+                        stack.push(stack[stack.length-1]);
+                    },
+                },
+                POP: {
+                    html: "^",
+                    action: function() {
+                        stack.pop();
+                    },
+                },
+                PRINT_CHAR: {
+                    html: "p",
+                    action: function() {
+                        if (stack.length > 0){
+                            a = stack.pop();
+                            document.getElementById("output").innerHTML += String.fromCharCode(a);
+                        }
+                    },
+                },
             };
 
             current_state = state.EDIT;
@@ -92,108 +246,7 @@
 
             function step() {
                 tok = tokens[cursorY*boxY+cursorX]
-                switch(tok) {
-                    case token.ZERO:
-                        stack.push(0);
-                        break;
-                    case token.ONE:
-                        stack.push(1);
-                        break;
-                    case token.TWO:
-                        stack.push(2);
-                        break;
-                    case token.THREE:
-                        stack.push(3);
-                        break;
-                    case token.FOUR:
-                        stack.push(4);
-                        break;
-                    case token.FIVE:
-                        stack.push(5);
-                        break;
-                    case token.SIX:
-                        stack.push(6);
-                        break;
-                    case token.SEVEN:
-                        stack.push(7);
-                        break;
-                    case token.EIGHT:
-                        stack.push(8);
-                        break;
-                    case token.NINE:
-                        stack.push(9);
-                        break;
-                    case token.ADD:
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b+a);
-                        }
-                        break;
-                    case token.SUB:
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b-a);
-                        }
-                        break;
-                    case token.MUL:
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b*a);
-                        }
-                        break;
-                    case token.DIV:
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(Math.floor(b/a));
-                        }
-                        break;
-                    case token.MOD:
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b % a);
-                        }
-                        break;
-                    case token.PRINT_CHAR:
-                        if (stack.length > 0){
-                            a = stack.pop();
-                            document.getElementById("output").innerHTML += String.fromCharCode(a);
-                        }
-                        break;
-                    case token.RIGHT:
-                        direction = tok;
-                        break;
-                    case token.LEFT:
-                        direction = tok;
-                        break;
-                    case token.UP:
-                        direction = tok;
-                        break;
-                    case token.DOWN:
-                        direction = tok;
-                        break;
-                    case token.EMPTY_STACK:
-                        if (stack.length == 0) {
-                            rotate_clockwise();
-                        }
-                        break;
-                    case token.ZERO_TEST:
-                        if (stack[stack.length-1] == 0) {
-                            rotate_clockwise();
-                        }
-                        break;
-                    case token.CLONE_TOP:
-                        stack.push(stack[stack.length-1]);
-                        break;
-                    case token.POP:
-                        stack.pop();
-                        break;
-
-                }
+                tok.action();
                 update_stack();
                 next_position();
             }
@@ -231,9 +284,9 @@
                     for (let i = 0; i<boxY; i++) {
                         for (let j = 0; j<boxX; j++) {
                             if (i == cursorY && j == cursorX) {
-                                s += "<span class=\"tile selected\">" + tokens[i*boxY+j] + "</span>";
+                                s += "<span class=\"tile selected\">" + tokens[i*boxY+j].html + "</span>";
                             } else {
-                                s += "<span class=\"tile\">" + tokens[i*boxY+j] + "</span>";
+                                s += "<span class=\"tile\">" + tokens[i*boxY+j].html + "</span>";
                             }
                         }
                         s += "</br>";
@@ -445,7 +498,7 @@
         <div id="edit_info"> 
             <div>
                 <span><b>STÖÖP (Stack-based lööpy language)</b></span>
-                <p><b>STÖÖP</b> </p>
+                <p><b>STÖÖP</b> is an esoteric language</p>
             </div>
             <span>Accepted Tokens Descriptions:</span>
             <ul>
