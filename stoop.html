@@ -1,11 +1,19 @@
 <html>
     <head>
         <title>STÖÖP (Stack-based lööpy language)</title>
+        <script type="text/javascript" src="cp437.js"></script>
         <script type="text/javascript">
             let cursorX = 0;
             let cursorY = 0;
-            let boxX = 12;
-            let boxY = 12;
+            let boxX = 16;
+            let boxY = 16;
+            var fontsheetX = 16;
+            var fontsheetY = 16;
+            var fontsizeX = 10;
+            var fontsizeY = 10;
+            var consoleX = 72;
+            var consoleY = 40;
+            var scale = 2;
 
             let ctrl = false;
             let shift = false;
@@ -22,95 +30,95 @@
 
             const token = {
                 UP : {
-                        html: "↑",
-                        action: function() {
-                            direction = tok;
-                        },
+                    ascii: 24,
+                    action: function() {
+                        direction = tok;
                     },
+                },
                 DOWN : {
-                        html: "↓",
-                        action: function() {
-                            direction = tok;
-                        },
+                    ascii: 25,
+                    action: function() {
+                        direction = tok;
                     },
+                },
                 LEFT : {
-                        html: "←",
-                        action: function() {
-                            direction = tok;
-                        },
+                    ascii: 27,
+                    action: function() {
+                        direction = tok;
                     },
+                },
                 RIGHT : {
-                        html: "→",
+                    ascii: 26,
                         action: function() {
                             direction = tok;
                         },
                     },
                 EMPTY: {
-                    html: "&nbsp",
+                    ascii: " ".charCodeAt(0),
                     action: function() {},
                 },
                 ZERO: {
-                    html: "0",
+                    ascii: "0".charCodeAt(0),
                     action: function() {
                         stack.push(0);
                     },
                 },
                 ONE: {
-                    html: "1",
+                    ascii: "1".charCodeAt(0),
                     action: function() {
                         stack.push(1);
                     },
                 },
                 TWO: {
-                    html: "2",
+                    ascii: "2".charCodeAt(0),
                     action: function() {
                         stack.push(2);
                     },
                 },
                 THREE: {
-                    html: "3",
+                    ascii: "3".charCodeAt(0),
                     action: function() {
                         stack.push(3);
                     },
                 },
                 FOUR: {
-                    html: "4",
+                    ascii: "4".charCodeAt(0),
                     action: function() {
                         stack.push(4);
                     },
                 },
                 FIVE: {
-                    html: "5",
+                    ascii: "5".charCodeAt(0),
                     action: function() {
                         stack.push(5);
                     },
                 },
                 SIX: {
-                    html: "6",
+                    ascii: "6".charCodeAt(0),
                     action: function() {
                         stack.push(6);
                     },
                 },
                 SEVEN: {
-                    html: "7",
+                    ascii: "7".charCodeAt(0),
                     action: function() {
                         stack.push(7);
                     },
                 },
                 EIGHT: {
-                    html: "8",
+                    ascii: "8".charCodeAt(0),
                     action: function() {
                         stack.push(8);
                     },
                 },
                 NINE: {
-                    html: "9",
+                    ascii: "9".charCodeAt(0),
                     action: function() {
                         stack.push(9);
                     },
                 },
                 ADD: {
-                    html: "+",
+                    ascii: "+".charCodeAt(0),
                     action: function() {
                         if (stack.length > 1){
                             a = stack.pop();
@@ -120,7 +128,7 @@
                     },
                 },
                 SUB: {
-                    html: "-",
+                    ascii: "-".charCodeAt(0),
                     action: function() {
                         if (stack.length > 1){
                             a = stack.pop();
@@ -130,7 +138,7 @@
                     },
                 },
                 MUL: {
-                    html: "×",
+                    ascii: "*".charCodeAt(0),
                     action: function() {
                         if (stack.length > 1){
                             a = stack.pop();
@@ -140,7 +148,7 @@
                     },
                 },
                 DIV: {
-                    html: "/",
+                    ascii: "/".charCodeAt(0),
                     action: function() {
                         if (stack.length > 1){
                             a = stack.pop();
@@ -150,7 +158,7 @@
                     },
                 },
                 MOD: {
-                    html: "%",
+                    ascii: "%".charCodeAt(0),
                     action: function() {
                         if (stack.length > 1){
                             a = stack.pop();
@@ -160,7 +168,7 @@
                     },
                 },
                 EMPTY_STACK: {
-                    html: "_",
+                    ascii: "_".charCodeAt(0),
                     action: function() {
                         if (stack.length == 0) {
                             rotate_clockwise();
@@ -168,7 +176,7 @@
                     },
                 },
                 ZERO_TEST: {
-                    html: "?",
+                    ascii: "?".charCodeAt(0),
                     action: function() {
                         if (stack[stack.length-1] == 0) {
                             rotate_clockwise();
@@ -176,23 +184,23 @@
                     },
                 },
                 CLONE_TOP: {
-                    html: "☍",
+                    ascii: 1,
                     action: function() {
                         stack.push(stack[stack.length-1]);
                     },
                 },
                 POP: {
-                    html: "^",
+                    ascii: "^".charCodeAt(0),
                     action: function() {
                         stack.pop();
                     },
                 },
                 PRINT_CHAR: {
-                    html: "p",
+                    ascii: "p".charCodeAt(0),
                     action: function() {
                         if (stack.length > 0){
                             a = stack.pop();
-                            document.getElementById("output").innerHTML += String.fromCharCode(a);
+                            // document.getElementById("output").innerHTML += String.fromCharCode(a);
                         }
                     },
                 },
@@ -220,8 +228,8 @@
                 stack = [];
                 cursorX = 0;
                 cursorY = 0;
-                document.getElementById("stack").innerHTML = "";
-                document.getElementById("output").innerHTML = "";
+                // document.getElementById("stack").innerHTML = "";
+                // document.getElementById("output").innerHTML = "";
             }
 
             function update_stack() {
@@ -229,7 +237,7 @@
                 for (let i = 0; i < stack.length; i++) {
                     s += stack[i] + " | "
                 }
-                document.getElementById("stack").innerHTML = s;
+                // document.getElementById("stack").innerHTML = s;
             }
 
             function rotate_clockwise(){
@@ -271,27 +279,17 @@
 
             setInterval(function(){ if (run) { step(); } }, 1);
             window.onload = function() {
-                let textarea = document.getElementById("editor");
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
 
-                drawbox();
+                c.width = consoleX * fontsizeX * scale;
+                c.height = consoleY * fontsizeY * scale;
+
+                // drawbox();
+                draw_edit_screen(ctx, c);
 
                 function logMessage(message) {
                     console.log(message);
-                }
-
-                function drawbox() {
-                    s = ""
-                    for (let i = 0; i<boxY; i++) {
-                        for (let j = 0; j<boxX; j++) {
-                            if (i == cursorY && j == cursorX) {
-                                s += "<span class=\"tile selected\">" + tokens[i*boxY+j].html + "</span>";
-                            } else {
-                                s += "<span class=\"tile\">" + tokens[i*boxY+j].html + "</span>";
-                            }
-                        }
-                        s += "</br>";
-                    }
-                    textarea.innerHTML = s
                 }
 
                 document.body.addEventListener('keydown', (e) => {
@@ -409,7 +407,7 @@
                                 tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
                                 break;
                         }
-                        drawbox();
+                        draw_edit_screen(ctx, c);
                     }
                     
                     else if (current_state == state.RUN) {
@@ -417,32 +415,28 @@
                             case " ":
                                 console.log("step.")
                                 step();
+                                draw_edit_screen(ctx, c);
                                 break;
                             case "Enter":
                                 console.log("step.")
                                 run = !run;
+                                draw_edit_screen(ctx, c);
                                 break;
                             case "r":
                                 reset();
+                                draw_edit_screen(ctx, c);
                                 break;
                         }
                     } 
                     if (e.key == "Escape") {
                         if (current_state == state.EDIT){
                             current_state = state.RUN;
-                            document.getElementById("edit_tab").classList.remove("selected");
-                            document.getElementById("run_tab").classList.add("selected");
-                            document.getElementById("edit_info").style.display = 'none';
-                            document.getElementById("run_info").style.display = 'block';
                             reset();
                         } else if (current_state == state.RUN){
                             current_state = state.EDIT;
-                            document.getElementById("edit_tab").classList.add("selected");
-                            document.getElementById("run_tab").classList.remove("selected");
-                            document.getElementById("edit_info").style.display = 'block';
-                            document.getElementById("run_info").style.display = 'none';
                             reset();
                         }
+                        draw_edit_screen(ctx, c);
                     }
 
                     logMessage(`Key "${e.key}" pressed  [event: keydown]`);
@@ -453,118 +447,203 @@
                     if (e.key == "Shift") {
                         shift = false;
                     }
-                    drawbox();
+                    // drawbox();
                     logMessage(`Key "${e.key}" released  [event: keyup]`);
                 });
+            }
+
+            function draw_char (ctx, textPosX, textPosY, char_index, color="white", highlight="black", pixeloffsetX=0, pixeloffsetY=0) {
+                ctx.fillStyle = highlight;
+                ctx.fillRect(
+                    (textPosX * fontsizeX + pixeloffsetX) * scale, 
+                    (textPosY * fontsizeY + pixeloffsetY) * scale, 
+                    scale * fontsizeX, 
+                    scale * fontsizeY
+                );
+                ctx.fillStyle = color;
+
+                for (var y = 0; y < fontsizeY; y++) {
+                    for (var x = 0; x < fontsizeX; x++) {
+                        if (cp437[char_index][x + y * fontsizeY] == 1) {
+                            var posX = textPosX * fontsizeX + x + pixeloffsetX;
+                            var posY = textPosY * fontsizeY + y + pixeloffsetY;
+                            ctx.fillRect(posX * scale, posY * scale, scale, scale);
+                        }
+                    }
+                }
+            }
+
+            function draw_text (ctx, textPosX, textPosY, text, color="white", highlight="black") {
+                for (var i = 0; i < text.length; i++) {
+                    draw_char(ctx, textPosX + i, textPosY, text.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
+                }
+            }
+
+            function draw_paragraph (ctx, textPosX, textPosY, text, color="white", highlight="black") {
+                var lines = text.split("\n");
+                for (var j = 0; j < lines.length; j++) {
+                    var line = lines[j];
+                    for (var i = 0; i < line.length; i++) {
+                        draw_char(ctx, textPosX + i, textPosY+j, line.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
+                    }
+                }
+                
+            }
+
+            function draw_box_single(ctx, minX, minY, maxX, maxY) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, minY, 196); // ─
+                    draw_char(ctx, i, maxY, 196); // ─
+                }
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, minX, i, 179); // │
+                    draw_char(ctx, maxX, i, 179); // │
+                }
+                draw_char(ctx, minX, minY, 218); // ┌
+                draw_char(ctx, maxX, minY, 191); // ┐
+                draw_char(ctx, minX, maxY, 192); // └
+                draw_char(ctx, maxX, maxY, 217); // ┘
+            }
+
+            function draw_box_double(ctx, minX, minY, maxX, maxY) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, minY, 205); // ═
+                    draw_char(ctx, i, maxY, 205); // ═
+                }
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, minX, i, 186); // ║
+                    draw_char(ctx, maxX, i, 186); // ║
+                }
+                draw_char(ctx, minX, minY, 201); // ╔
+                draw_char(ctx, maxX, minY, 187); // ╗
+                draw_char(ctx, minX, maxY, 200); // ╚
+                draw_char(ctx, maxX, maxY, 188); // ╝
+            }
+
+            function draw_box_horizontal_divide(ctx, y, minX, maxX) {
+                for (var i = minX + 1; i < maxX; i++) {
+                    draw_char(ctx, i, y, 196); // ─
+                    draw_char(ctx, i, y, 196); // ─
+                }
+                draw_char(ctx, minX, y, 195); // 
+                draw_char(ctx, maxX, y, 180); // 
+            }
+
+            function draw_box_vertical_divide(ctx, x, minY, maxY) {
+                for (var i = minY + 1; i < maxY; i++) {
+                    draw_char(ctx, x, i, 179); // │
+                    draw_char(ctx, x, i, 179); // │
+                }
+                draw_char(ctx, x, minY, 209); // 
+                draw_char(ctx, x, maxY, 207); // 
+            }
+
+            function draw_box (ctx) {
+                draw_box_single(ctx, 2, 2, 19, 19);
+                for (var i = 0; i < 16; i++) {
+                    for (var j = 0; j < 16; j++) {
+                        // var rand = Math.floor(Math.random() * 256);
+                        if (cursorX == i && cursorY == j) {
+                            draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii, color="black", highlight="white");
+                        } else { 
+                            draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii);
+                        }
+                    }
+                }
+            }
+
+            function draw_stack(ctx) {
+                for (var i = 0; i < stack.length; i++) {
+                    hex = stack[i].toString(16).toUpperCase();
+                    if (hex.length == 1) {
+                        hex = "0" + hex;
+                    }
+                    draw_text(ctx, 22, 3 + i, " x" + hex);
+                }
+
+            }
+
+            function draw_edit_screen (ctx, canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
+                draw_text(ctx, 22, 1, "stack");
+                draw_box_horizontal_divide(ctx, 2, 21, 26);
+                draw_stack(ctx);
+                draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
+                draw_box_vertical_divide(ctx, 26, 0, consoleY - 1);
+                draw_box(ctx);
+                draw_text(ctx, 2, 21, "DIR:");
+                draw_char(ctx, 6, 21, direction.ascii)
+                draw_text(ctx, 2, 23, "ENTER:Run/Stop", color='gray');
+                draw_text(ctx, 2, 24, "SPACE:Step", color='gray');
+                draw_text(ctx, 2, 25, "R:    Reset", color='gray');
+                // for (var i = 0; i < 16; i++) {
+                //     for (var j = 0; j < 16; j++) {
+                //         draw_char(ctx, 33 + j, 3 + i, i * 16 + j);
+                //     }
+                // }
+                // for (var i = 0; i < 16; i++) {
+                //     hex = 48 + i;
+                //     if (hex > 57) {
+                //         hex += 7;
+                //     }
+                //     draw_char(ctx, 33 + i, 2, hex, color='white', highlight='blue');
+                // }
+                // for (var i = 0; i < 16; i++) {
+                //     hex = 48 + i;
+                //     if (hex > 57) {
+                //         hex += 7;
+                //     }
+                //     draw_char(ctx, 32, 3 + i, hex, color='white', highlight='blue');
+                //     draw_text(ctx, 32, 2, " ", color='white', highlight='blue');
+                // }
+                for (var i = 0; i < consoleX; i++) {
+                    draw_text(ctx, i, 0, " ", color='white', highlight='white');
+                    draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
+                }
+                
+                var s = "Problem 2 - The Stack\n" + 
+                    "\n" + 
+                    "A STOOP program has a pointer which moves in a given\n" + 
+                    "direction, manipulating the stack as it evaluates\n" +
+                    "the square.\n" +
+                    "\n" +
+                    "Write a program that takes numbers (0-9) from the\n" +
+                    "stack and prints the associated ASCII number.\n" +
+                    "\n" +
+                    "You may find the following commands helpful:\n" +
+                    "\n" +
+                    "+: Pops the top two elements from the stack, computes\n" +
+                    "   the sum, and places the result on the stack\n" +
+                    "\n" +
+                    "*: Pops the top two elements from the stack, computes\n" +
+                    "   the product, and places the result on the stack\n" +
+                    "\n" +
+                    "p: Pops the top of the stack and prints the\n" +
+                    "   associated ASCII number\n" +
+                    "\n" +
+                    "_: Checks if the stack is empty. If so, the pointer\n" +
+                    "   is rotated clockwise. Otherwise, nothing happens\n"
+                draw_paragraph(ctx, 28, 2, s);
+
             }
             
         </script>
         <style>
             body {
                 background-color: black;
-                font-family: "Courier New", Courier, monospace;
-                color: white;
-            }
+            } 
 
-            #editor {
-                border-width: 1px;
-                border-color: white;
-                border-style: double;
-                width: fit-content;
-            }
-
-            .selected {
-                background-color: white;
-                color: black;
-            }
-
-            .tile {
-                text-align:center;
-                margin-left: 5px;
-                margin-right: 5px;
-                font-weight: bold;
-            }
-
-            .help {
-                color:gray;
+            canvas{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-right: -50%;
+                transform: translate(-50%, -50%);
             }
         </style>
     </head>
     <body>
-        <div><span id="edit_tab" class="selected">EDIT</span>|<span id="run_tab"n>RUN</span> <span class="help">(ESC to toggle)</span></div>
-        </hr>
-        <div id="editor"></div>
-        </br>
-        <div id="edit_info"> 
-            <div>
-                <span><b>STÖÖP (Stack-based lööpy language)</b></span>
-                <p><b>STÖÖP</b> is an esoteric language</p>
-            </div>
-            <span>Accepted Tokens Descriptions:</span>
-            <ul>
-                <li>
-                    <span style='font-weight: bold'>
-                        "0-9"
-                    </span>
-                    </br>Pushes an integer value onto the stack.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "↑,↓,←,→"
-                    </span> 
-                    <span class="help">
-                        (shift+arrow keys)
-                    </span>
-                    </br>Changes the direction of the pointer.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "×,/,-,+,%"
-                    </span> 
-                    </br>Pops top entry (a) and second from top entry (b) and computes b op a, and pushes the result to the stack.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "p"
-                    </span> 
-                    </br>Pops top entry from the stack and outputs the associated ASCII character.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "_"
-                    </span> 
-                    </br>Tests whether the stack is empty. If any items remain in the stack, nothing happens. If it is empty, the pointer turns 90 degrees clockwise.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "?"
-                    </span> 
-                    </br>Peeks at the top of the stack and tests for a zero value. If non-zero, nothing happens. If it is zero, the pointer turns 90 degrees clockwise.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "^"
-                    </span> 
-                    </br>Pops the top element off the stack.
-                </li>
-                <li>
-                    <span style='font-weight: bold'>
-                        "☍"
-                    </span> 
-                    <span class="help">
-                        (shift+d)
-                    </span>
-                    </br>Peeks at the top of the stack and pushes the same value to the top of the stack.
-                </li>
-            </ul>   
-        </div>
-        <div id="run_info" style="display: none;">
-            <span class="help">(ENTER to run/pause, SPACE to step, R to reset)</span></br>
-            <span>DIRECTION: </span><span id="direction">→</span></br>
-            <span>STACK:</span>
-            <div id="stack">&nbsp</div>
-            <span>OUTPUT:</span>
-            <div id="output"></div>
-        </div>
+        <canvas id="myCanvas"></canvas>
     </body>
 </html>

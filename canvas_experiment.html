@@ -49,18 +49,16 @@
                 }
             }
 
-            // function draw_char (ctx, font, textPosX, textPosY, charX, charY) {
-            //     ctx.drawImage(
-            //         font, 
-            //         charX * fontsizeX, 
-            //         charY * fontsizeY, 
-            //         fontsizeX, 
-            //         fontsizeY, 
-            //         textPosX * fontsizeX, 
-            //         textPosY * fontsizeY, 
-            //         fontsizeX, 
-            //         fontsizeY);
-            // }
+            function draw_paragraph (ctx, textPosX, textPosY, text, color="white", highlight="black") {
+                var lines = text.split("\n");
+                for (var j = 0; j < lines.length; j++) {
+                    var line = lines[j];
+                    for (var i = 0; i < line.length; i++) {
+                        draw_char(ctx, textPosX + i, textPosY+j, line.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
+                    }
+                }
+                
+            }
 
             function draw_box_single(ctx, minX, minY, maxX, maxY) {
                 for (var i = minX + 1; i < maxX; i++) {
@@ -117,38 +115,23 @@
                 c.width = consoleX * fontsizeX * scale;
                 c.height = consoleY * fontsizeY * scale;
                 draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
-                draw_box_vertical_divide(ctx, 17, 0, consoleY - 1);
-                draw_box_vertical_divide(ctx, 23, 0, consoleY - 1);
-                draw_text(ctx, 18, 1, "stack");
-                draw_box_horizontal_divide(ctx, 2, 17, 23);
-                draw_text(ctx, 18, 3, " xFF");
-                draw_text(ctx, 18, 4, " xEE");
-                draw_text(ctx, 18, 5, " xDD");
-                draw_text(ctx, 18, 6, " xCC");
-                draw_text(ctx, 18, 7, " xBB");
-                draw_text(ctx, 18, 8, " xAA");
-                draw_text(ctx, 18, 9, " x99");
-                draw_text(ctx, 18, 10, " x88");
-                draw_text(ctx, 18, 11, " x77");
-                draw_text(ctx, 18, 12, " x66");
-                draw_text(ctx, 18, 13, " x55");
-                draw_text(ctx, 18, 14, " x44");
-                draw_text(ctx, 18, 15, " x33");
-                draw_text(ctx, 18, 16, " x22");
-                draw_text(ctx, 18, 17, " x11");
-                draw_text(ctx, 18, 18, " x00");
-                draw_box_single(ctx, 2, 2, 15, 15);
-                for (var i = 0; i < 12; i++) {
-                    for (var j = 0; j < 12; j++) {
+                draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
+                draw_box_vertical_divide(ctx, 26, 0, consoleY - 1);
+                draw_text(ctx, 22, 1, "stack");
+                draw_box_horizontal_divide(ctx, 2, 21, 26);
+                draw_text(ctx, 22, 3, " xFF");
+                draw_box_single(ctx, 2, 2, 19, 19);
+                for (var i = 0; i < 16; i++) {
+                    for (var j = 0; j < 16; j++) {
                         var rand = Math.floor(Math.random() * 256);
                         draw_char(ctx, 3 + i, 3 + j, rand);
                     }
                 }
-                draw_text(ctx, 2, 17, "DIR:");
-                draw_char(ctx, 6, 17, 25)
-                draw_text(ctx, 2, 19, "ENTER:Run/Stop", color='gray');
-                draw_text(ctx, 2, 20, "SPACE:Step", color='gray');
-                draw_text(ctx, 2, 21, "R:    Reset", color='gray');
+                draw_text(ctx, 2, 21, "DIR:");
+                draw_char(ctx, 6, 21, 25)
+                draw_text(ctx, 2, 23, "ENTER:Run/Stop", color='gray');
+                draw_text(ctx, 2, 24, "SPACE:Step", color='gray');
+                draw_text(ctx, 2, 25, "R:    Reset", color='gray');
                 // for (var i = 0; i < 16; i++) {
                 //     for (var j = 0; j < 16; j++) {
                 //         draw_char(ctx, 33 + j, 3 + i, i * 16 + j);
@@ -173,22 +156,30 @@
                     draw_text(ctx, i, 0, " ", color='white', highlight='white');
                     draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
                 }
-                draw_text(ctx, 25, 2, "Problem 1 - The Basics");
-                draw_text(ctx, 25, 4, "A STOOP program has a pointer which moves in a given", color='green');
-                draw_text(ctx, 25, 5, "direction, manipulating the stack as it evaluates", color='green');
-                draw_text(ctx, 25, 6, "commands. The program terminates when the pointer leaves", color='green');
-                draw_text(ctx, 25, 7, "the square.", color='green');
-                draw_text(ctx, 25, 9, "Write a program that takes numbers (0-9) from the stack", color='green');
-                draw_text(ctx, 25, 10, "and prints the associated ASCII number.", color='green');
-                draw_text(ctx, 25, 12, "You may  find the following commands helpful:", color='green');
-                draw_text(ctx, 25, 14, "+: Pops the top two elements from the stack, computes", color='green');
-                draw_text(ctx, 25, 15, "   the sum, and places the result on the stack", color='green');
-                draw_text(ctx, 25, 17, "*: Pops the top two elements from the stack, computes", color='green');
-                draw_text(ctx, 25, 18, "   the product, and places the result on the stack", color='green');
-                draw_text(ctx, 25, 20, "p: Pops the top of the stack and prints the associated ", color='green');
-                draw_text(ctx, 25, 21, "   ASCII value", color='green');
-                draw_text(ctx, 25, 23, "_: Checks if the stack is empty. If so, the pointer is ", color='green');
-                draw_text(ctx, 25, 24, "   rotated clockwise. Otherwise, nothing happens", color='green');
+                
+                var s = "Problem 2 - The Stack\n" + 
+                    "\n" + 
+                    "A STOOP program has a pointer which moves in a given\n" + 
+                    "direction, manipulating the stack as it evaluates\n" +
+                    "the square.\n" +
+                    "\n" +
+                    "Write a program that takes numbers (0-9) from the\n" +
+                    "stack and prints the associated ASCII number.\n" +
+                    "\n" +
+                    "You may find the following commands helpful:\n" +
+                    "\n" +
+                    "+: Pops the top two elements from the stack, computes\n" +
+                    "   the sum, and places the result on the stack\n" +
+                    "\n" +
+                    "*: Pops the top two elements from the stack, computes\n" +
+                    "   the product, and places the result on the stack\n" +
+                    "\n" +
+                    "p: Pops the top of the stack and prints the\n" +
+                    "   associated ASCII number\n" +
+                    "\n" +
+                    "_: Checks if the stack is empty. If so, the pointer\n" +
+                    "   is rotated clockwise. Otherwise, nothing happens\n"
+                draw_paragraph(ctx, 28, 2, s);
             };
         </script>
     </head>
