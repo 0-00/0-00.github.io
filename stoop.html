@@ -19,6 +19,8 @@
             let shift = false;
             let run = false;
 
+            let output = "";
+
             const state = {
                 EDIT : 'edit', 
                 RUN : 'run',
@@ -34,88 +36,187 @@
                     action: function() {
                         direction = tok;
                     },
+                    key_press: function (shift_pressed, key) {
+                        return e.key == "ArrowUp" && shift_pressed;
+                    }
                 },
                 DOWN : {
                     ascii: 25,
                     action: function() {
                         direction = tok;
                     },
+                    key_press: function (shift_pressed, key) {
+                        return e.key == "ArrowDown" && shift_pressed;
+                    }
                 },
                 LEFT : {
                     ascii: 27,
                     action: function() {
                         direction = tok;
                     },
+                    key_press: function (shift_pressed, key) {
+                        return e.key == "ArrowLeft" && shift_pressed;
+                    }
                 },
                 RIGHT : {
                     ascii: 26,
-                        action: function() {
-                            direction = tok;
-                        },
+                    action: function() {
+                        direction = tok;
                     },
+                    key_press: function (shift_pressed, key) {
+                        return e.key == "ArrowRight" && shift_pressed;
+                    }
+                },
                 EMPTY: {
                     ascii: " ".charCodeAt(0),
                     action: function() {},
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 ZERO: {
                     ascii: "0".charCodeAt(0),
                     action: function() {
                         stack.push(0);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 ONE: {
                     ascii: "1".charCodeAt(0),
                     action: function() {
                         stack.push(1);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 TWO: {
                     ascii: "2".charCodeAt(0),
                     action: function() {
                         stack.push(2);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 THREE: {
                     ascii: "3".charCodeAt(0),
                     action: function() {
                         stack.push(3);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 FOUR: {
                     ascii: "4".charCodeAt(0),
                     action: function() {
                         stack.push(4);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 FIVE: {
                     ascii: "5".charCodeAt(0),
                     action: function() {
                         stack.push(5);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 SIX: {
                     ascii: "6".charCodeAt(0),
                     action: function() {
                         stack.push(6);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 SEVEN: {
                     ascii: "7".charCodeAt(0),
                     action: function() {
                         stack.push(7);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 EIGHT: {
                     ascii: "8".charCodeAt(0),
                     action: function() {
                         stack.push(8);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 NINE: {
                     ascii: "9".charCodeAt(0),
                     action: function() {
                         stack.push(9);
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                A: {
+                    ascii: "A".charCodeAt(0),
+                    action: function() {
+                        stack.push(10);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                B: {
+                    ascii: "B".charCodeAt(0),
+                    action: function() {
+                        stack.push(11);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                C: {
+                    ascii: "C".charCodeAt(0),
+                    action: function() {
+                        stack.push(12);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                D: {
+                    ascii: "D".charCodeAt(0),
+                    action: function() {
+                        stack.push(13);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                E: {
+                    ascii: "E".charCodeAt(0),
+                    action: function() {
+                        stack.push(14);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
+                },
+                F: {
+                    ascii: "F".charCodeAt(0),
+                    action: function() {
+                        stack.push(15);
+                    },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 ADD: {
                     ascii: "+".charCodeAt(0),
@@ -126,6 +227,9 @@
                             stack.push(b+a);
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 SUB: {
                     ascii: "-".charCodeAt(0),
@@ -136,6 +240,9 @@
                             stack.push(b-a);
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 MUL: {
                     ascii: "*".charCodeAt(0),
@@ -146,6 +253,9 @@
                             stack.push(b*a);
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 DIV: {
                     ascii: "/".charCodeAt(0),
@@ -156,6 +266,9 @@
                             stack.push(Math.floor(b/a));
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 MOD: {
                     ascii: "%".charCodeAt(0),
@@ -166,6 +279,9 @@
                             stack.push(b % a);
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 EMPTY_STACK: {
                     ascii: "_".charCodeAt(0),
@@ -174,6 +290,9 @@
                             rotate_clockwise();
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 ZERO_TEST: {
                     ascii: "?".charCodeAt(0),
@@ -182,28 +301,53 @@
                             rotate_clockwise();
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 CLONE_TOP: {
-                    ascii: 1,
+                    ascii: 127,
                     action: function() {
-                        stack.push(stack[stack.length-1]);
+                        if (stack.length > 0) {
+                            stack.push(stack[stack.length-1]);
+                        }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 POP: {
                     ascii: "^".charCodeAt(0),
                     action: function() {
                         stack.pop();
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
                 PRINT_CHAR: {
                     ascii: "p".charCodeAt(0),
                     action: function() {
                         if (stack.length > 0){
                             a = stack.pop();
-                            // document.getElementById("output").innerHTML += String.fromCharCode(a);
+                            output += String.fromCharCode(a);
                         }
                     },
+                    key_press: function (shift_pressed, key) {
+                        return false;
+                    }
                 },
+
+                // QUEUE: toggles reading the stack data as FIFO rather than LIFO
+
+                // COMMENTS: toggles actioning instructions
+
+                // READ INSTRUCTION : pops the top of the stack, and pushes the instruction at that index (xXY) to the stack
+
+                // WRITE INSTRUCTION : 
+                // index          : top of stack (format 0xXY)
+                // instruction_id : second in stack
+                // writes instruction_id at index of tokens
             };
 
             current_state = state.EDIT;
@@ -223,6 +367,7 @@
             stack = [];
 
             function reset() {
+                output = "";
                 run = false;
                 direction = token.RIGHT;
                 stack = [];
@@ -286,7 +431,7 @@
                 c.height = consoleY * fontsizeY * scale;
 
                 // drawbox();
-                draw_edit_screen(ctx, c);
+                draw_screen(ctx, c);
 
                 function logMessage(message) {
                     console.log(message);
@@ -310,23 +455,31 @@
                                 console.log(s);
                             }
                         }
-                        if (shift) {
-                            if (e.key == "ArrowLeft") {
-                                tokens[cursorY*boxY+cursorX] = token.LEFT;
-                            }
-                            else if (e.key == "ArrowRight") {
-                                tokens[cursorY*boxY+cursorX] = token.RIGHT;
-                            }
-                            else if (e.key == "ArrowUp") {
-                                tokens[cursorY*boxY+cursorX] = token.UP;
-                            }
-                            else if (e.key == "ArrowDown") {
-                                tokens[cursorY*boxY+cursorX] = token.DOWN;
-                            }
-                            else if (e.key == "D") {
-                                tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
+                        // if (shift) {
+                        //     if (e.key == "ArrowLeft") {
+                        //         tokens[cursorY*boxY+cursorX] = token.LEFT;
+                        //     }
+                        //     else if (e.key == "ArrowRight") {
+                        //         tokens[cursorY*boxY+cursorX] = token.RIGHT;
+                        //     }
+                        //     else if (e.key == "ArrowUp") {
+                        //         tokens[cursorY*boxY+cursorX] = token.UP;
+                        //     }
+                        //     else if (e.key == "ArrowDown") {
+                        //         tokens[cursorY*boxY+cursorX] = token.DOWN;
+                        //     }
+                        //     else if (e.key == "D") {
+                        //         tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
+                        //     }
+                        // }
+
+                        for (const tok in token) {
+                            console.log(tok);
+                            if (tok.key_press(shift, e.key)) {
+                                tokens[cursorY*boxY+cursorX] = tok;
                             }
                         }
+
                         if (e.key == "ArrowLeft") {
                                 cursorX = mod(cursorX - 1, boxX);
                             }
@@ -379,6 +532,42 @@
                             case "9":
                                 tokens[cursorY*boxY+cursorX] = token.NINE;
                                 break;
+                            case "A":
+                                tokens[cursorY*boxY+cursorX] = token.A;
+                                break;
+                            case "B":
+                                tokens[cursorY*boxY+cursorX] = token.B;
+                                break;
+                            case "C":
+                                tokens[cursorY*boxY+cursorX] = token.C;
+                                break;
+                            case "D":
+                                tokens[cursorY*boxY+cursorX] = token.D;
+                                break;
+                            case "E":
+                                tokens[cursorY*boxY+cursorX] = token.E;
+                                break;
+                            case "F":
+                                tokens[cursorY*boxY+cursorX] = token.F;
+                                break;
+                            case "a":
+                                tokens[cursorY*boxY+cursorX] = token.A;
+                                break;
+                            case "b":
+                                tokens[cursorY*boxY+cursorX] = token.B;
+                                break;
+                            case "c":
+                                tokens[cursorY*boxY+cursorX] = token.C;
+                                break;
+                            case "d":
+                                tokens[cursorY*boxY+cursorX] = token.D;
+                                break;
+                            case "e":
+                                tokens[cursorY*boxY+cursorX] = token.E;
+                                break;
+                            case "f":
+                                tokens[cursorY*boxY+cursorX] = token.F;
+                                break;
                             case "*":
                                 tokens[cursorY*boxY+cursorX] = token.MUL;
                                 break;
@@ -406,8 +595,11 @@
                             case "p":
                                 tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
                                 break;
+                            case "P":
+                                tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
+                                break;
                         }
-                        draw_edit_screen(ctx, c);
+                        draw_screen(ctx, c);
                     }
                     
                     else if (current_state == state.RUN) {
@@ -415,20 +607,21 @@
                             case " ":
                                 console.log("step.")
                                 step();
-                                draw_edit_screen(ctx, c);
+                                draw_screen(ctx, c);
                                 break;
                             case "Enter":
                                 console.log("step.")
                                 run = !run;
-                                draw_edit_screen(ctx, c);
+                                draw_screen(ctx, c);
                                 break;
                             case "r":
                                 reset();
-                                draw_edit_screen(ctx, c);
+                                draw_screen(ctx, c);
                                 break;
                         }
                     } 
-                    if (e.key == "Escape") {
+                    if (e.key == "Tab") {
+                        e.preventDefault();
                         if (current_state == state.EDIT){
                             current_state = state.RUN;
                             reset();
@@ -436,7 +629,7 @@
                             current_state = state.EDIT;
                             reset();
                         }
-                        draw_edit_screen(ctx, c);
+                        draw_screen(ctx, c);
                     }
 
                     logMessage(`Key "${e.key}" pressed  [event: keydown]`);
@@ -563,7 +756,95 @@
 
             }
 
+            function draw_screen (ctx, canvas) {
+                if (current_state == state.EDIT) {
+                    draw_edit_screen (ctx, canvas);
+                } else if (current_state == state.RUN) {
+                    draw_run_screen (ctx, canvas)
+                }
+            }
+
             function draw_edit_screen (ctx, canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
+                draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
+                draw_box(ctx);
+                draw_text(ctx, 2, 21, "DIR:");
+                draw_char(ctx, 6, 21, direction.ascii)
+                draw_text(ctx, 3, 2, "EDIT", color='white');
+                draw_text(ctx, 2, 23, "TAB:  Run Mode", color='gray');
+                for (var i = 0; i < consoleX; i++) {
+                    draw_text(ctx, i, 0, " ", color='white', highlight='white');
+                    draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
+                }
+                draw_text(ctx, 1, 0, "C:\\\\STOOP.exe > PROBLEM 2", color='black', highlight='white');
+                
+                // var s = "Problem 2 - The Stack\n" + 
+                //     "\n" + 
+                //     "A STOOP program has a pointer which moves in a given\n" + 
+                //     "direction, manipulating the stack as it evaluates\n" +
+                //     "the square.\n" +
+                //     "\n" +
+                //     "Write a program that takes numbers (0-9) from the\n" +
+                //     "stack and prints the associated ASCII number.\n" +
+                //     "\n" +
+                //     "You may find the following commands helpful:\n" +
+                //     "\n" +
+                //     "+: Pops the top two elements from the stack, computes\n" +
+                //     "   the sum, and places the result on the stack\n" +
+                //     "\n" +
+                //     "*: Pops the top two elements from the stack, computes\n" +
+                //     "   the product, and places the result on the stack\n" +
+                //     "\n" +
+                //     "p: Pops the top of the stack and prints the\n" +
+                //     "   associated ASCII number\n" +
+                //     "\n" +
+                //     "_: Checks if the stack is empty. If so, the pointer\n" +
+                //     "   is rotated clockwise. Otherwise, nothing happens\n"
+                var s = 
+                String.fromCharCode(24) + String.fromCharCode(25) + String.fromCharCode(26) + String.fromCharCode(27) + 
+                    " : Changes the pointer to move in the direction the \n" +
+                    "       arrow is pointing (Shift + Arrow Key)\n" +
+                    "\n" +
+                    "0-F  : Adds hex number to the top of the stack\n" +
+                    "\n" +
+                    "+*   : Pops the top two elements from the stack, computes\n" +
+                    "       the sum/product, and places the result on the stack\n" +
+                    "\n" +
+                    "-/%  : Pops the top two elements from the stack, computes\n" +
+                    "       the subtraction/division/modulus, and places the \n" +
+                    "       result on the stack. NOTE: The top of the stack is \n" +
+                    "       the numerator\n" +
+                    "\n" +
+                    "p    : Pops the top of the stack and prints the\n" +
+                    "       associated ASCII number\n" +
+                    "\n" +
+                    // String.fromCharCode(174) + String.fromCharCode(175) + 
+                    // "   : Pops the top of the stack and prints the\n" +
+                    // "       associated ASCII number\n" +
+                    // "\n" +
+                    "_    : Checks if the stack is empty. If so, the pointer\n" +
+                    "       is rotated clockwise. Otherwise, nothing happens\n" +
+                    "\n" +
+                    "?    : Checks if the top of the stack is zero. If so, \n" +
+                    "       the pointer is rotated clockwise. Otherwise,\n" +
+                    "       nothing happens\n" +
+                    "\n"+
+                    String.fromCharCode(127) + 
+                    "    : Duplicates the top of the stack (Shift + D)\n" +
+                    "\n"+
+                    "^    : Pops the top of the stack\n" +
+                    "\n";
+                ;
+                draw_text(ctx, 33, 2, " INSTRUCTION REFERENCE (1/1) ", color='black', highlight='white');
+                
+                draw_paragraph(ctx, 24, 4, s);
+
+                draw_text(ctx, 36, 37, " PAGE UP / PAGE DOWN ", color='black', highlight='white');
+
+            }
+
+            function draw_run_screen (ctx, canvas) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
                 draw_text(ctx, 22, 1, "stack");
@@ -574,58 +855,19 @@
                 draw_box(ctx);
                 draw_text(ctx, 2, 21, "DIR:");
                 draw_char(ctx, 6, 21, direction.ascii)
-                draw_text(ctx, 2, 23, "ENTER:Run/Stop", color='gray');
+                draw_text(ctx, 2, 23, "TAB:  Edit Mode", color='gray');
+                // draw_text(ctx, 2, 24, "ENTER:Run/Stop", color='gray');
                 draw_text(ctx, 2, 24, "SPACE:Step", color='gray');
                 draw_text(ctx, 2, 25, "R:    Reset", color='gray');
-                // for (var i = 0; i < 16; i++) {
-                //     for (var j = 0; j < 16; j++) {
-                //         draw_char(ctx, 33 + j, 3 + i, i * 16 + j);
-                //     }
-                // }
-                // for (var i = 0; i < 16; i++) {
-                //     hex = 48 + i;
-                //     if (hex > 57) {
-                //         hex += 7;
-                //     }
-                //     draw_char(ctx, 33 + i, 2, hex, color='white', highlight='blue');
-                // }
-                // for (var i = 0; i < 16; i++) {
-                //     hex = 48 + i;
-                //     if (hex > 57) {
-                //         hex += 7;
-                //     }
-                //     draw_char(ctx, 32, 3 + i, hex, color='white', highlight='blue');
-                //     draw_text(ctx, 32, 2, " ", color='white', highlight='blue');
-                // }
+                draw_text(ctx, 3, 2, "RUN", color='white');
                 for (var i = 0; i < consoleX; i++) {
                     draw_text(ctx, i, 0, " ", color='white', highlight='white');
                     draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
                 }
-                
-                var s = "Problem 2 - The Stack\n" + 
-                    "\n" + 
-                    "A STOOP program has a pointer which moves in a given\n" + 
-                    "direction, manipulating the stack as it evaluates\n" +
-                    "the square.\n" +
-                    "\n" +
-                    "Write a program that takes numbers (0-9) from the\n" +
-                    "stack and prints the associated ASCII number.\n" +
-                    "\n" +
-                    "You may find the following commands helpful:\n" +
-                    "\n" +
-                    "+: Pops the top two elements from the stack, computes\n" +
-                    "   the sum, and places the result on the stack\n" +
-                    "\n" +
-                    "*: Pops the top two elements from the stack, computes\n" +
-                    "   the product, and places the result on the stack\n" +
-                    "\n" +
-                    "p: Pops the top of the stack and prints the\n" +
-                    "   associated ASCII number\n" +
-                    "\n" +
-                    "_: Checks if the stack is empty. If so, the pointer\n" +
-                    "   is rotated clockwise. Otherwise, nothing happens\n"
-                draw_paragraph(ctx, 28, 2, s);
-
+                draw_text(ctx, 1, 0, "C:\\\\STOOP.exe > PROBLEM 2", color='black', highlight='white');
+                draw_text(ctx, 44, 2, " CONSOLE ", color='black', highlight='white');
+                draw_text(ctx, 28, 3, ">");
+                draw_text(ctx, 29, 3, output);
             }
             
         </script>
