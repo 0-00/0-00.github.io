@@ -1,891 +1,992 @@
 <html>
-    <head>
-        <title>STÖÖP (Stack-based lööpy language)</title>
-        <script type="text/javascript" src="cp437.js"></script>
-        <script type="text/javascript">
-            let cursorX = 0;
-            let cursorY = 0;
-            let boxX = 16;
-            let boxY = 16;
-            var fontsheetX = 16;
-            var fontsheetY = 16;
-            var fontsizeX = 10;
-            var fontsizeY = 10;
-            var consoleX = 72;
-            var consoleY = 40;
-            var scale = 2;
+  <head>
+    <title>STÖÖP (Stack-based lööpy language)</title>
+    <script type="text/javascript" src="cp437.js"></script>
+    <script type="text/javascript">
+      let cursorX = 0;
+      let cursorY = 0;
+      let boxX = 16;
+      let boxY = 16;
+      var fontsheetX = 16;
+      var fontsheetY = 16;
+      var fontsizeX = 10;
+      var fontsizeY = 10;
+      var consoleX = 72;
+      var consoleY = 40;
+      var scale = 2;
 
-            let ctrl = false;
-            let shift = false;
-            let run = false;
+      let ctrl = false;
+      let shift = false;
+      let run = false;
 
-            let output = "";
+      let output = "";
 
-            const state = {
-                EDIT : 'edit', 
-                RUN : 'run',
+      const state = {
+        EDIT: "edit",
+        RUN: "run",
+      };
+
+      const dir = {
+        UP: 0,
+        DOWN: 1,
+        LEFT: 2,
+        RIGHT: 3,
+      };
+
+      const token = {
+        UP: {
+          ascii: 24,
+          action: function () {
+            direction = tok;
+          },
+          key_press: function (shift_pressed, key) {
+            return e.key == "ArrowUp" && shift_pressed;
+          },
+        },
+        DOWN: {
+          ascii: 25,
+          action: function () {
+            direction = tok;
+          },
+          key_press: function (shift_pressed, key) {
+            return e.key == "ArrowDown" && shift_pressed;
+          },
+        },
+        LEFT: {
+          ascii: 27,
+          action: function () {
+            direction = tok;
+          },
+          key_press: function (shift_pressed, key) {
+            return e.key == "ArrowLeft" && shift_pressed;
+          },
+        },
+        RIGHT: {
+          ascii: 26,
+          action: function () {
+            direction = tok;
+          },
+          key_press: function (shift_pressed, key) {
+            return e.key == "ArrowRight" && shift_pressed;
+          },
+        },
+        EMPTY: {
+          ascii: " ".charCodeAt(0),
+          action: function () {},
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        ZERO: {
+          ascii: "0".charCodeAt(0),
+          action: function () {
+            stack.push(0);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        ONE: {
+          ascii: "1".charCodeAt(0),
+          action: function () {
+            stack.push(1);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        TWO: {
+          ascii: "2".charCodeAt(0),
+          action: function () {
+            stack.push(2);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        THREE: {
+          ascii: "3".charCodeAt(0),
+          action: function () {
+            stack.push(3);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        FOUR: {
+          ascii: "4".charCodeAt(0),
+          action: function () {
+            stack.push(4);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        FIVE: {
+          ascii: "5".charCodeAt(0),
+          action: function () {
+            stack.push(5);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        SIX: {
+          ascii: "6".charCodeAt(0),
+          action: function () {
+            stack.push(6);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        SEVEN: {
+          ascii: "7".charCodeAt(0),
+          action: function () {
+            stack.push(7);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        EIGHT: {
+          ascii: "8".charCodeAt(0),
+          action: function () {
+            stack.push(8);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        NINE: {
+          ascii: "9".charCodeAt(0),
+          action: function () {
+            stack.push(9);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        A: {
+          ascii: "A".charCodeAt(0),
+          action: function () {
+            stack.push(10);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        B: {
+          ascii: "B".charCodeAt(0),
+          action: function () {
+            stack.push(11);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        C: {
+          ascii: "C".charCodeAt(0),
+          action: function () {
+            stack.push(12);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        D: {
+          ascii: "D".charCodeAt(0),
+          action: function () {
+            stack.push(13);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        E: {
+          ascii: "E".charCodeAt(0),
+          action: function () {
+            stack.push(14);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        F: {
+          ascii: "F".charCodeAt(0),
+          action: function () {
+            stack.push(15);
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        ADD: {
+          ascii: "+".charCodeAt(0),
+          action: function () {
+            if (stack.length > 1) {
+              a = stack.pop();
+              b = stack.pop();
+              stack.push(b + a);
             }
-
-            const dir = {
-                UP : 0, DOWN : 1, LEFT : 2, RIGHT : 3
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        SUB: {
+          ascii: "-".charCodeAt(0),
+          action: function () {
+            if (stack.length > 1) {
+              a = stack.pop();
+              b = stack.pop();
+              stack.push(b - a);
             }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        MUL: {
+          ascii: "*".charCodeAt(0),
+          action: function () {
+            if (stack.length > 1) {
+              a = stack.pop();
+              b = stack.pop();
+              stack.push(b * a);
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        DIV: {
+          ascii: "/".charCodeAt(0),
+          action: function () {
+            if (stack.length > 1) {
+              a = stack.pop();
+              b = stack.pop();
+              stack.push(Math.floor(b / a));
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        MOD: {
+          ascii: "%".charCodeAt(0),
+          action: function () {
+            if (stack.length > 1) {
+              a = stack.pop();
+              b = stack.pop();
+              stack.push(b % a);
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        EMPTY_STACK: {
+          ascii: "_".charCodeAt(0),
+          action: function () {
+            if (stack.length == 0) {
+              rotate_clockwise();
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        ZERO_TEST: {
+          ascii: "?".charCodeAt(0),
+          action: function () {
+            if (stack[stack.length - 1] == 0) {
+              rotate_clockwise();
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        CLONE_TOP: {
+          ascii: 127,
+          action: function () {
+            if (stack.length > 0) {
+              stack.push(stack[stack.length - 1]);
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        POP: {
+          ascii: "^".charCodeAt(0),
+          action: function () {
+            stack.pop();
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
+        PRINT_CHAR: {
+          ascii: "p".charCodeAt(0),
+          action: function () {
+            if (stack.length > 0) {
+              a = stack.pop();
+              output += String.fromCharCode(a);
+            }
+          },
+          key_press: function (shift_pressed, key) {
+            return false;
+          },
+        },
 
-            const token = {
-                UP : {
-                    ascii: 24,
-                    action: function() {
-                        direction = tok;
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return e.key == "ArrowUp" && shift_pressed;
-                    }
-                },
-                DOWN : {
-                    ascii: 25,
-                    action: function() {
-                        direction = tok;
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return e.key == "ArrowDown" && shift_pressed;
-                    }
-                },
-                LEFT : {
-                    ascii: 27,
-                    action: function() {
-                        direction = tok;
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return e.key == "ArrowLeft" && shift_pressed;
-                    }
-                },
-                RIGHT : {
-                    ascii: 26,
-                    action: function() {
-                        direction = tok;
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return e.key == "ArrowRight" && shift_pressed;
-                    }
-                },
-                EMPTY: {
-                    ascii: " ".charCodeAt(0),
-                    action: function() {},
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                ZERO: {
-                    ascii: "0".charCodeAt(0),
-                    action: function() {
-                        stack.push(0);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                ONE: {
-                    ascii: "1".charCodeAt(0),
-                    action: function() {
-                        stack.push(1);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                TWO: {
-                    ascii: "2".charCodeAt(0),
-                    action: function() {
-                        stack.push(2);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                THREE: {
-                    ascii: "3".charCodeAt(0),
-                    action: function() {
-                        stack.push(3);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                FOUR: {
-                    ascii: "4".charCodeAt(0),
-                    action: function() {
-                        stack.push(4);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                FIVE: {
-                    ascii: "5".charCodeAt(0),
-                    action: function() {
-                        stack.push(5);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                SIX: {
-                    ascii: "6".charCodeAt(0),
-                    action: function() {
-                        stack.push(6);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                SEVEN: {
-                    ascii: "7".charCodeAt(0),
-                    action: function() {
-                        stack.push(7);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                EIGHT: {
-                    ascii: "8".charCodeAt(0),
-                    action: function() {
-                        stack.push(8);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                NINE: {
-                    ascii: "9".charCodeAt(0),
-                    action: function() {
-                        stack.push(9);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                A: {
-                    ascii: "A".charCodeAt(0),
-                    action: function() {
-                        stack.push(10);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                B: {
-                    ascii: "B".charCodeAt(0),
-                    action: function() {
-                        stack.push(11);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                C: {
-                    ascii: "C".charCodeAt(0),
-                    action: function() {
-                        stack.push(12);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                D: {
-                    ascii: "D".charCodeAt(0),
-                    action: function() {
-                        stack.push(13);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                E: {
-                    ascii: "E".charCodeAt(0),
-                    action: function() {
-                        stack.push(14);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                F: {
-                    ascii: "F".charCodeAt(0),
-                    action: function() {
-                        stack.push(15);
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                ADD: {
-                    ascii: "+".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b+a);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                SUB: {
-                    ascii: "-".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b-a);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                MUL: {
-                    ascii: "*".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b*a);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                DIV: {
-                    ascii: "/".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(Math.floor(b/a));
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                MOD: {
-                    ascii: "%".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 1){
-                            a = stack.pop();
-                            b = stack.pop();
-                            stack.push(b % a);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                EMPTY_STACK: {
-                    ascii: "_".charCodeAt(0),
-                    action: function() {
-                        if (stack.length == 0) {
-                            rotate_clockwise();
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                ZERO_TEST: {
-                    ascii: "?".charCodeAt(0),
-                    action: function() {
-                        if (stack[stack.length-1] == 0) {
-                            rotate_clockwise();
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                CLONE_TOP: {
-                    ascii: 127,
-                    action: function() {
-                        if (stack.length > 0) {
-                            stack.push(stack[stack.length-1]);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                POP: {
-                    ascii: "^".charCodeAt(0),
-                    action: function() {
-                        stack.pop();
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
-                PRINT_CHAR: {
-                    ascii: "p".charCodeAt(0),
-                    action: function() {
-                        if (stack.length > 0){
-                            a = stack.pop();
-                            output += String.fromCharCode(a);
-                        }
-                    },
-                    key_press: function (shift_pressed, key) {
-                        return false;
-                    }
-                },
+        // QUEUE: toggles reading the stack data as FIFO rather than LIFO
 
-                // QUEUE: toggles reading the stack data as FIFO rather than LIFO
+        // COMMENTS: toggles actioning instructions
 
-                // COMMENTS: toggles actioning instructions
+        // READ INSTRUCTION : pops the top of the stack, and pushes the instruction at that index (xXY) to the stack
 
-                // READ INSTRUCTION : pops the top of the stack, and pushes the instruction at that index (xXY) to the stack
+        // WRITE INSTRUCTION :
+        // index          : top of stack (format 0xXY)
+        // instruction_id : second in stack
+        // writes instruction_id at index of tokens
+      };
 
-                // WRITE INSTRUCTION : 
-                // index          : top of stack (format 0xXY)
-                // instruction_id : second in stack
-                // writes instruction_id at index of tokens
-            };
+      current_state = state.EDIT;
 
-            current_state = state.EDIT;
+      var tokens = [];
+      for (let i = 0; i < boxY; i++) {
+        for (let j = 0; j < boxX; j++) {
+          tokens[i * boxY + j] = token.EMPTY;
+        }
+      }
 
-            var tokens = [];
-            for (let i = 0; i<boxY; i++) {
-                for (let j = 0; j<boxX; j++) {
-                    tokens[i*boxY+j] = token.EMPTY;
+      function mod(n, m) {
+        return ((n % m) + m) % m;
+      }
+
+      direction = token.RIGHT;
+      stack = [];
+
+      function reset() {
+        output = "";
+        run = false;
+        direction = token.RIGHT;
+        stack = [];
+        cursorX = 0;
+        cursorY = 0;
+        // document.getElementById("stack").innerHTML = "";
+        // document.getElementById("output").innerHTML = "";
+      }
+
+      function update_stack() {
+        s = "| ";
+        for (let i = 0; i < stack.length; i++) {
+          s += stack[i] + " | ";
+        }
+        // document.getElementById("stack").innerHTML = s;
+      }
+
+      function rotate_clockwise() {
+        if (direction == token.RIGHT) {
+          direction = token.DOWN;
+        } else if (direction == token.DOWN) {
+          direction = token.LEFT;
+        } else if (direction == token.LEFT) {
+          direction = token.UP;
+        } else if (direction == token.UP) {
+          direction = token.RIGHT;
+        }
+      }
+
+      function step() {
+        tok = tokens[cursorY * boxY + cursorX];
+        tok.action();
+        update_stack();
+        next_position();
+      }
+
+      function next_position() {
+        switch (direction) {
+          case token.RIGHT:
+            cursorX += 1;
+            break;
+          case token.LEFT:
+            cursorX -= 1;
+            break;
+          case token.UP:
+            cursorY -= 1;
+            break;
+          case token.DOWN:
+            cursorY += 1;
+            break;
+        }
+        run =
+          run &&
+          cursorX > -1 &&
+          cursorX < boxX &&
+          cursorY > -1 &&
+          cursorY < boxY;
+      }
+
+      setInterval(function () {
+        if (run) {
+          step();
+        }
+      }, 1);
+      window.onload = function () {
+        document.addEventListener("resize", function (event) {
+          console.log("resize event");
+        });
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+        c.width = consoleX * fontsizeX * scale;
+        c.height = consoleY * fontsizeY * scale;
+
+        // drawbox();
+        draw_screen(ctx, c);
+
+        function logMessage(message) {
+          console.log(message);
+        }
+
+        document.body.addEventListener("keydown", (e) => {
+          if (current_state == state.EDIT) {
+            if (e.key == "Shift") {
+              shift = true;
+            }
+            if (e.key == "Control") {
+              ctrl = true;
+            }
+            if (ctrl) {
+              if (e.key == "c") {
+                s = "";
+                for (let i = 0; i < tokens.length; i++) {
+                  s += tokens[i];
                 }
+                console.log(s);
+              }
+            }
+            // if (shift) {
+            //     if (e.key == "ArrowLeft") {
+            //         tokens[cursorY*boxY+cursorX] = token.LEFT;
+            //     }
+            //     else if (e.key == "ArrowRight") {
+            //         tokens[cursorY*boxY+cursorX] = token.RIGHT;
+            //     }
+            //     else if (e.key == "ArrowUp") {
+            //         tokens[cursorY*boxY+cursorX] = token.UP;
+            //     }
+            //     else if (e.key == "ArrowDown") {
+            //         tokens[cursorY*boxY+cursorX] = token.DOWN;
+            //     }
+            //     else if (e.key == "D") {
+            //         tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
+            //     }
+            // }
+
+            for (const tok in token) {
+              console.log(tok);
+              if (tok.key_press(shift, e.key)) {
+                tokens[cursorY * boxY + cursorX] = tok;
+              }
             }
 
-            function mod(n, m) {
-                return ((n % m) + m) % m;
+            if (e.key == "ArrowLeft") {
+              cursorX = mod(cursorX - 1, boxX);
+            } else if (e.key == "ArrowRight") {
+              cursorX = mod(cursorX + 1, boxX);
+            } else if (e.key == "ArrowUp") {
+              cursorY = mod(cursorY - 1, boxY);
+            } else if (e.key == "ArrowDown") {
+              cursorY = mod(cursorY + 1, boxY);
             }
-
-            direction = token.RIGHT;
-            stack = [];
-
-            function reset() {
-                output = "";
-                run = false;
-                direction = token.RIGHT;
-                stack = [];
-                cursorX = 0;
-                cursorY = 0;
-                // document.getElementById("stack").innerHTML = "";
-                // document.getElementById("output").innerHTML = "";
+            switch (e.key) {
+              case " ":
+                tokens[cursorY * boxY + cursorX] = token.EMPTY;
+                break;
+              case "Delete":
+                tokens[cursorY * boxY + cursorX] = token.EMPTY;
+                break;
+              case "Backspace":
+                tokens[cursorY * boxY + cursorX] = token.EMPTY;
+                break;
+              case "0":
+                tokens[cursorY * boxY + cursorX] = token.ZERO;
+                break;
+              case "1":
+                tokens[cursorY * boxY + cursorX] = token.ONE;
+                break;
+              case "2":
+                tokens[cursorY * boxY + cursorX] = token.TWO;
+                break;
+              case "3":
+                tokens[cursorY * boxY + cursorX] = token.THREE;
+                break;
+              case "4":
+                tokens[cursorY * boxY + cursorX] = token.FOUR;
+                break;
+              case "5":
+                tokens[cursorY * boxY + cursorX] = token.FIVE;
+                break;
+              case "6":
+                tokens[cursorY * boxY + cursorX] = token.SIX;
+                break;
+              case "7":
+                tokens[cursorY * boxY + cursorX] = token.SEVEN;
+                break;
+              case "8":
+                tokens[cursorY * boxY + cursorX] = token.EIGHT;
+                break;
+              case "9":
+                tokens[cursorY * boxY + cursorX] = token.NINE;
+                break;
+              case "A":
+                tokens[cursorY * boxY + cursorX] = token.A;
+                break;
+              case "B":
+                tokens[cursorY * boxY + cursorX] = token.B;
+                break;
+              case "C":
+                tokens[cursorY * boxY + cursorX] = token.C;
+                break;
+              case "D":
+                tokens[cursorY * boxY + cursorX] = token.D;
+                break;
+              case "E":
+                tokens[cursorY * boxY + cursorX] = token.E;
+                break;
+              case "F":
+                tokens[cursorY * boxY + cursorX] = token.F;
+                break;
+              case "a":
+                tokens[cursorY * boxY + cursorX] = token.A;
+                break;
+              case "b":
+                tokens[cursorY * boxY + cursorX] = token.B;
+                break;
+              case "c":
+                tokens[cursorY * boxY + cursorX] = token.C;
+                break;
+              case "d":
+                tokens[cursorY * boxY + cursorX] = token.D;
+                break;
+              case "e":
+                tokens[cursorY * boxY + cursorX] = token.E;
+                break;
+              case "f":
+                tokens[cursorY * boxY + cursorX] = token.F;
+                break;
+              case "*":
+                tokens[cursorY * boxY + cursorX] = token.MUL;
+                break;
+              case "/":
+                tokens[cursorY * boxY + cursorX] = token.DIV;
+                break;
+              case "%":
+                tokens[cursorY * boxY + cursorX] = token.MOD;
+                break;
+              case "+":
+                tokens[cursorY * boxY + cursorX] = token.ADD;
+                break;
+              case "-":
+                tokens[cursorY * boxY + cursorX] = token.SUB;
+                break;
+              case "_":
+                tokens[cursorY * boxY + cursorX] = token.EMPTY_STACK;
+                break;
+              case "?":
+                tokens[cursorY * boxY + cursorX] = token.ZERO_TEST;
+                break;
+              case "^":
+                tokens[cursorY * boxY + cursorX] = token.POP;
+                break;
+              case "p":
+                tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
+                break;
+              case "P":
+                tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
+                break;
             }
-
-            function update_stack() {
-                s = "| ";
-                for (let i = 0; i < stack.length; i++) {
-                    s += stack[i] + " | "
-                }
-                // document.getElementById("stack").innerHTML = s;
-            }
-
-            function rotate_clockwise(){
-                if (direction == token.RIGHT) {
-                    direction = token.DOWN;
-                } else if (direction == token.DOWN) {
-                    direction = token.LEFT;
-                } else if (direction == token.LEFT) {
-                    direction = token.UP;
-                } else if (direction == token.UP) {
-                    direction = token.RIGHT;
-                }
-            }
-
-            function step() {
-                tok = tokens[cursorY*boxY+cursorX]
-                tok.action();
-                update_stack();
-                next_position();
-            }
-
-            function next_position() {
-                switch(direction) {
-                    case token.RIGHT:
-                        cursorX += 1;
-                        break;
-                    case token.LEFT:
-                        cursorX -= 1;
-                        break;
-                    case token.UP:
-                        cursorY -= 1;
-                        break;
-                    case token.DOWN:
-                        cursorY += 1;
-                        break;
-                }
-                run = run && cursorX > -1 && cursorX < boxX && cursorY > -1 && cursorY < boxY 
-            }
-
-            setInterval(function(){ if (run) { step(); } }, 1);
-            window.onload = function() {
-                var c = document.getElementById("myCanvas");
-                var ctx = c.getContext("2d");
-
-                c.width = consoleX * fontsizeX * scale;
-                c.height = consoleY * fontsizeY * scale;
-
-                // drawbox();
+            draw_screen(ctx, c);
+          } else if (current_state == state.RUN) {
+            switch (e.key) {
+              case " ":
+                console.log("step.");
+                step();
                 draw_screen(ctx, c);
-
-                function logMessage(message) {
-                    console.log(message);
-                }
-
-                document.body.addEventListener('keydown', (e) => {
-                    
-                    if (current_state == state.EDIT) {
-                        if (e.key == "Shift") {
-                            shift = true;
-                        }
-                        if (e.key == "Control") {
-                            ctrl = true;
-                        }
-                        if (ctrl) {
-                            if (e.key == "c") {
-                                s = "";
-                                for (let i = 0; i<tokens.length; i++) {
-                                    s += tokens[i]
-                                }
-                                console.log(s);
-                            }
-                        }
-                        // if (shift) {
-                        //     if (e.key == "ArrowLeft") {
-                        //         tokens[cursorY*boxY+cursorX] = token.LEFT;
-                        //     }
-                        //     else if (e.key == "ArrowRight") {
-                        //         tokens[cursorY*boxY+cursorX] = token.RIGHT;
-                        //     }
-                        //     else if (e.key == "ArrowUp") {
-                        //         tokens[cursorY*boxY+cursorX] = token.UP;
-                        //     }
-                        //     else if (e.key == "ArrowDown") {
-                        //         tokens[cursorY*boxY+cursorX] = token.DOWN;
-                        //     }
-                        //     else if (e.key == "D") {
-                        //         tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
-                        //     }
-                        // }
-
-                        for (const tok in token) {
-                            console.log(tok);
-                            if (tok.key_press(shift, e.key)) {
-                                tokens[cursorY*boxY+cursorX] = tok;
-                            }
-                        }
-
-                        if (e.key == "ArrowLeft") {
-                                cursorX = mod(cursorX - 1, boxX);
-                            }
-                            else if (e.key == "ArrowRight") {
-                                cursorX = mod(cursorX + 1, boxX);
-                            }
-                            else if (e.key == "ArrowUp") {
-                                cursorY = mod(cursorY - 1, boxY);
-                            }
-                            else if (e.key == "ArrowDown") {
-                                cursorY = mod(cursorY + 1, boxY);
-                        }
-                        switch (e.key) {
-                            case " ":
-                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
-                                break;
-                            case "Delete":
-                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
-                                break;
-                            case "Backspace":
-                                tokens[cursorY*boxY+cursorX] = token.EMPTY;
-                                break;
-                            case "0":
-                                tokens[cursorY*boxY+cursorX] = token.ZERO;
-                                break;
-                            case "1":
-                                tokens[cursorY*boxY+cursorX] = token.ONE;
-                                break;
-                            case "2":
-                                tokens[cursorY*boxY+cursorX] = token.TWO;
-                                break;
-                            case "3":
-                                tokens[cursorY*boxY+cursorX] = token.THREE;
-                                break;
-                            case "4":
-                                tokens[cursorY*boxY+cursorX] = token.FOUR;
-                                break;
-                            case "5":
-                                tokens[cursorY*boxY+cursorX] = token.FIVE;
-                                break;
-                            case "6":
-                                tokens[cursorY*boxY+cursorX] = token.SIX;
-                                break;
-                            case "7":
-                                tokens[cursorY*boxY+cursorX] = token.SEVEN;
-                                break;
-                            case "8":
-                                tokens[cursorY*boxY+cursorX] = token.EIGHT;
-                                break;
-                            case "9":
-                                tokens[cursorY*boxY+cursorX] = token.NINE;
-                                break;
-                            case "A":
-                                tokens[cursorY*boxY+cursorX] = token.A;
-                                break;
-                            case "B":
-                                tokens[cursorY*boxY+cursorX] = token.B;
-                                break;
-                            case "C":
-                                tokens[cursorY*boxY+cursorX] = token.C;
-                                break;
-                            case "D":
-                                tokens[cursorY*boxY+cursorX] = token.D;
-                                break;
-                            case "E":
-                                tokens[cursorY*boxY+cursorX] = token.E;
-                                break;
-                            case "F":
-                                tokens[cursorY*boxY+cursorX] = token.F;
-                                break;
-                            case "a":
-                                tokens[cursorY*boxY+cursorX] = token.A;
-                                break;
-                            case "b":
-                                tokens[cursorY*boxY+cursorX] = token.B;
-                                break;
-                            case "c":
-                                tokens[cursorY*boxY+cursorX] = token.C;
-                                break;
-                            case "d":
-                                tokens[cursorY*boxY+cursorX] = token.D;
-                                break;
-                            case "e":
-                                tokens[cursorY*boxY+cursorX] = token.E;
-                                break;
-                            case "f":
-                                tokens[cursorY*boxY+cursorX] = token.F;
-                                break;
-                            case "*":
-                                tokens[cursorY*boxY+cursorX] = token.MUL;
-                                break;
-                            case "/":
-                                tokens[cursorY*boxY+cursorX] = token.DIV;
-                                break;
-                            case "%":
-                                tokens[cursorY*boxY+cursorX] = token.MOD;
-                                break;
-                            case "+":
-                                tokens[cursorY*boxY+cursorX] = token.ADD;
-                                break;
-                            case "-":
-                                tokens[cursorY*boxY+cursorX] = token.SUB;
-                                break;
-                            case "_":
-                                tokens[cursorY*boxY+cursorX] = token.EMPTY_STACK;
-                                break;
-                            case "?":
-                                tokens[cursorY*boxY+cursorX] = token.ZERO_TEST;
-                                break;
-                            case "^":
-                                tokens[cursorY*boxY+cursorX] = token.POP;
-                                break;
-                            case "p":
-                                tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
-                                break;
-                            case "P":
-                                tokens[cursorY*boxY+cursorX] = token.PRINT_CHAR;
-                                break;
-                        }
-                        draw_screen(ctx, c);
-                    }
-                    
-                    else if (current_state == state.RUN) {
-                        switch(e.key){
-                            case " ":
-                                console.log("step.")
-                                step();
-                                draw_screen(ctx, c);
-                                break;
-                            case "Enter":
-                                console.log("step.")
-                                run = !run;
-                                draw_screen(ctx, c);
-                                break;
-                            case "r":
-                                reset();
-                                draw_screen(ctx, c);
-                                break;
-                        }
-                    } 
-                    if (e.key == "Tab") {
-                        e.preventDefault();
-                        if (current_state == state.EDIT){
-                            current_state = state.RUN;
-                            reset();
-                        } else if (current_state == state.RUN){
-                            current_state = state.EDIT;
-                            reset();
-                        }
-                        draw_screen(ctx, c);
-                    }
-
-                    logMessage(`Key "${e.key}" pressed  [event: keydown]`);
-                    }
-                );
-
-                document.body.addEventListener('keyup', (e) => {
-                    if (e.key == "Shift") {
-                        shift = false;
-                    }
-                    // drawbox();
-                    logMessage(`Key "${e.key}" released  [event: keyup]`);
-                });
+                break;
+              case "Enter":
+                console.log("step.");
+                run = !run;
+                draw_screen(ctx, c);
+                break;
+              case "r":
+                reset();
+                draw_screen(ctx, c);
+                break;
             }
-
-            function draw_char (ctx, textPosX, textPosY, char_index, color="white", highlight="black", pixeloffsetX=0, pixeloffsetY=0) {
-                ctx.fillStyle = highlight;
-                ctx.fillRect(
-                    (textPosX * fontsizeX + pixeloffsetX) * scale, 
-                    (textPosY * fontsizeY + pixeloffsetY) * scale, 
-                    scale * fontsizeX, 
-                    scale * fontsizeY
-                );
-                ctx.fillStyle = color;
-
-                for (var y = 0; y < fontsizeY; y++) {
-                    for (var x = 0; x < fontsizeX; x++) {
-                        if (cp437[char_index][x + y * fontsizeY] == 1) {
-                            var posX = textPosX * fontsizeX + x + pixeloffsetX;
-                            var posY = textPosY * fontsizeY + y + pixeloffsetY;
-                            ctx.fillRect(posX * scale, posY * scale, scale, scale);
-                        }
-                    }
-                }
+          }
+          if (e.key == "Tab") {
+            e.preventDefault();
+            if (current_state == state.EDIT) {
+              current_state = state.RUN;
+              reset();
+            } else if (current_state == state.RUN) {
+              current_state = state.EDIT;
+              reset();
             }
+            draw_screen(ctx, c);
+          }
 
-            function draw_text (ctx, textPosX, textPosY, text, color="white", highlight="black") {
-                for (var i = 0; i < text.length; i++) {
-                    draw_char(ctx, textPosX + i, textPosY, text.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
-                }
+          logMessage(`Key "${e.key}" pressed  [event: keydown]`);
+        });
+
+        document.body.addEventListener("keyup", (e) => {
+          if (e.key == "Shift") {
+            shift = false;
+          }
+          // drawbox();
+          logMessage(`Key "${e.key}" released  [event: keyup]`);
+        });
+      };
+
+      function draw_char(
+        ctx,
+        textPosX,
+        textPosY,
+        char_index,
+        color = "white",
+        highlight = "black",
+        pixeloffsetX = 0,
+        pixeloffsetY = 0
+      ) {
+        ctx.fillStyle = highlight;
+        ctx.fillRect(
+          (textPosX * fontsizeX + pixeloffsetX) * scale,
+          (textPosY * fontsizeY + pixeloffsetY) * scale,
+          scale * fontsizeX,
+          scale * fontsizeY
+        );
+        ctx.fillStyle = color;
+
+        for (var y = 0; y < fontsizeY; y++) {
+          for (var x = 0; x < fontsizeX; x++) {
+            if (cp437[char_index][x + y * fontsizeY] == 1) {
+              var posX = textPosX * fontsizeX + x + pixeloffsetX;
+              var posY = textPosY * fontsizeY + y + pixeloffsetY;
+              ctx.fillRect(posX * scale, posY * scale, scale, scale);
             }
+          }
+        }
+      }
 
-            function draw_paragraph (ctx, textPosX, textPosY, text, color="white", highlight="black") {
-                var lines = text.split("\n");
-                for (var j = 0; j < lines.length; j++) {
-                    var line = lines[j];
-                    for (var i = 0; i < line.length; i++) {
-                        draw_char(ctx, textPosX + i, textPosY+j, line.charCodeAt(i), color, highlight, pixeloffsetX=-i*2);
-                    }
-                }
-                
+      function draw_text(
+        ctx,
+        textPosX,
+        textPosY,
+        text,
+        color = "white",
+        highlight = "black"
+      ) {
+        for (var i = 0; i < text.length; i++) {
+          draw_char(
+            ctx,
+            textPosX + i,
+            textPosY,
+            text.charCodeAt(i),
+            color,
+            highlight,
+            (pixeloffsetX = -i * 2)
+          );
+        }
+      }
+
+      function draw_paragraph(
+        ctx,
+        textPosX,
+        textPosY,
+        text,
+        color = "white",
+        highlight = "black"
+      ) {
+        var lines = text.split("\n");
+        for (var j = 0; j < lines.length; j++) {
+          var line = lines[j];
+          for (var i = 0; i < line.length; i++) {
+            draw_char(
+              ctx,
+              textPosX + i,
+              textPosY + j,
+              line.charCodeAt(i),
+              color,
+              highlight,
+              (pixeloffsetX = -i * 2)
+            );
+          }
+        }
+      }
+
+      function draw_box_single(ctx, minX, minY, maxX, maxY) {
+        for (var i = minX + 1; i < maxX; i++) {
+          draw_char(ctx, i, minY, 196); // ─
+          draw_char(ctx, i, maxY, 196); // ─
+        }
+        for (var i = minY + 1; i < maxY; i++) {
+          draw_char(ctx, minX, i, 179); // │
+          draw_char(ctx, maxX, i, 179); // │
+        }
+        draw_char(ctx, minX, minY, 218); // ┌
+        draw_char(ctx, maxX, minY, 191); // ┐
+        draw_char(ctx, minX, maxY, 192); // └
+        draw_char(ctx, maxX, maxY, 217); // ┘
+      }
+
+      function draw_box_double(ctx, minX, minY, maxX, maxY) {
+        for (var i = minX + 1; i < maxX; i++) {
+          draw_char(ctx, i, minY, 205); // ═
+          draw_char(ctx, i, maxY, 205); // ═
+        }
+        for (var i = minY + 1; i < maxY; i++) {
+          draw_char(ctx, minX, i, 186); // ║
+          draw_char(ctx, maxX, i, 186); // ║
+        }
+        draw_char(ctx, minX, minY, 201); // ╔
+        draw_char(ctx, maxX, minY, 187); // ╗
+        draw_char(ctx, minX, maxY, 200); // ╚
+        draw_char(ctx, maxX, maxY, 188); // ╝
+      }
+
+      function draw_box_horizontal_divide(ctx, y, minX, maxX) {
+        for (var i = minX + 1; i < maxX; i++) {
+          draw_char(ctx, i, y, 196); // ─
+          draw_char(ctx, i, y, 196); // ─
+        }
+        draw_char(ctx, minX, y, 195); //
+        draw_char(ctx, maxX, y, 180); //
+      }
+
+      function draw_box_vertical_divide(ctx, x, minY, maxY) {
+        for (var i = minY + 1; i < maxY; i++) {
+          draw_char(ctx, x, i, 179); // │
+          draw_char(ctx, x, i, 179); // │
+        }
+        draw_char(ctx, x, minY, 209); //
+        draw_char(ctx, x, maxY, 207); //
+      }
+
+      function draw_box(ctx) {
+        draw_box_single(ctx, 2, 2, 19, 19);
+        for (var i = 0; i < 16; i++) {
+          for (var j = 0; j < 16; j++) {
+            // var rand = Math.floor(Math.random() * 256);
+            if (cursorX == i && cursorY == j) {
+              draw_char(
+                ctx,
+                3 + i,
+                3 + j,
+                tokens[i + j * boxX].ascii,
+                (color = "black"),
+                (highlight = "white")
+              );
+            } else {
+              draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii);
             }
+          }
+        }
+      }
 
-            function draw_box_single(ctx, minX, minY, maxX, maxY) {
-                for (var i = minX + 1; i < maxX; i++) {
-                    draw_char(ctx, i, minY, 196); // ─
-                    draw_char(ctx, i, maxY, 196); // ─
-                }
-                for (var i = minY + 1; i < maxY; i++) {
-                    draw_char(ctx, minX, i, 179); // │
-                    draw_char(ctx, maxX, i, 179); // │
-                }
-                draw_char(ctx, minX, minY, 218); // ┌
-                draw_char(ctx, maxX, minY, 191); // ┐
-                draw_char(ctx, minX, maxY, 192); // └
-                draw_char(ctx, maxX, maxY, 217); // ┘
-            }
+      function draw_stack(ctx) {
+        for (var i = 0; i < stack.length; i++) {
+          hex = stack[i].toString(16).toUpperCase();
+          if (hex.length == 1) {
+            hex = "0" + hex;
+          }
+          draw_text(ctx, 22, 3 + i, " x" + hex);
+        }
+      }
 
-            function draw_box_double(ctx, minX, minY, maxX, maxY) {
-                for (var i = minX + 1; i < maxX; i++) {
-                    draw_char(ctx, i, minY, 205); // ═
-                    draw_char(ctx, i, maxY, 205); // ═
-                }
-                for (var i = minY + 1; i < maxY; i++) {
-                    draw_char(ctx, minX, i, 186); // ║
-                    draw_char(ctx, maxX, i, 186); // ║
-                }
-                draw_char(ctx, minX, minY, 201); // ╔
-                draw_char(ctx, maxX, minY, 187); // ╗
-                draw_char(ctx, minX, maxY, 200); // ╚
-                draw_char(ctx, maxX, maxY, 188); // ╝
-            }
+      function draw_screen(ctx, canvas) {
+        if (current_state == state.EDIT) {
+          draw_edit_screen(ctx, canvas);
+        } else if (current_state == state.RUN) {
+          draw_run_screen(ctx, canvas);
+        }
+      }
 
-            function draw_box_horizontal_divide(ctx, y, minX, maxX) {
-                for (var i = minX + 1; i < maxX; i++) {
-                    draw_char(ctx, i, y, 196); // ─
-                    draw_char(ctx, i, y, 196); // ─
-                }
-                draw_char(ctx, minX, y, 195); // 
-                draw_char(ctx, maxX, y, 180); // 
-            }
+      function draw_edit_screen(ctx, canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
+        draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
+        draw_box(ctx);
+        draw_text(ctx, 2, 21, "DIR:");
+        draw_char(ctx, 6, 21, direction.ascii);
+        draw_text(ctx, 3, 2, "EDIT", (color = "white"));
+        draw_text(ctx, 2, 23, "TAB:  Run Mode", (color = "gray"));
+        for (var i = 0; i < consoleX; i++) {
+          draw_text(ctx, i, 0, " ", (color = "white"), (highlight = "white"));
+          draw_text(
+            ctx,
+            i,
+            consoleY - 1,
+            " ",
+            (color = "white"),
+            (highlight = "white")
+          );
+        }
+        draw_text(
+          ctx,
+          1,
+          0,
+          "C:\\\\STOOP.exe > PROBLEM 2",
+          (color = "black"),
+          (highlight = "white")
+        );
 
-            function draw_box_vertical_divide(ctx, x, minY, maxY) {
-                for (var i = minY + 1; i < maxY; i++) {
-                    draw_char(ctx, x, i, 179); // │
-                    draw_char(ctx, x, i, 179); // │
-                }
-                draw_char(ctx, x, minY, 209); // 
-                draw_char(ctx, x, maxY, 207); // 
-            }
+        // var s = "Problem 2 - The Stack\n" +
+        //     "\n" +
+        //     "A STOOP program has a pointer which moves in a given\n" +
+        //     "direction, manipulating the stack as it evaluates\n" +
+        //     "the square.\n" +
+        //     "\n" +
+        //     "Write a program that takes numbers (0-9) from the\n" +
+        //     "stack and prints the associated ASCII number.\n" +
+        //     "\n" +
+        //     "You may find the following commands helpful:\n" +
+        //     "\n" +
+        //     "+: Pops the top two elements from the stack, computes\n" +
+        //     "   the sum, and places the result on the stack\n" +
+        //     "\n" +
+        //     "*: Pops the top two elements from the stack, computes\n" +
+        //     "   the product, and places the result on the stack\n" +
+        //     "\n" +
+        //     "p: Pops the top of the stack and prints the\n" +
+        //     "   associated ASCII number\n" +
+        //     "\n" +
+        //     "_: Checks if the stack is empty. If so, the pointer\n" +
+        //     "   is rotated clockwise. Otherwise, nothing happens\n"
+        var s =
+          String.fromCharCode(24) +
+          String.fromCharCode(25) +
+          String.fromCharCode(26) +
+          String.fromCharCode(27) +
+          " : Changes the pointer to move in the direction the \n" +
+          "       arrow is pointing (Shift + Arrow Key)\n" +
+          "\n" +
+          "0-F  : Adds hex number to the top of the stack\n" +
+          "\n" +
+          "+*   : Pops the top two elements from the stack, computes\n" +
+          "       the sum/product, and places the result on the stack\n" +
+          "\n" +
+          "-/%  : Pops the top two elements from the stack, computes\n" +
+          "       the subtraction/division/modulus, and places the \n" +
+          "       result on the stack. NOTE: The top of the stack is \n" +
+          "       the numerator\n" +
+          "\n" +
+          "p    : Pops the top of the stack and prints the\n" +
+          "       associated ASCII number\n" +
+          "\n" +
+          // String.fromCharCode(174) + String.fromCharCode(175) +
+          // "   : Pops the top of the stack and prints the\n" +
+          // "       associated ASCII number\n" +
+          // "\n" +
+          "_    : Checks if the stack is empty. If so, the pointer\n" +
+          "       is rotated clockwise. Otherwise, nothing happens\n" +
+          "\n" +
+          "?    : Checks if the top of the stack is zero. If so, \n" +
+          "       the pointer is rotated clockwise. Otherwise,\n" +
+          "       nothing happens\n" +
+          "\n" +
+          String.fromCharCode(127) +
+          "    : Duplicates the top of the stack (Shift + D)\n" +
+          "\n" +
+          "^    : Pops the top of the stack\n" +
+          "\n";
+        draw_text(
+          ctx,
+          33,
+          2,
+          " INSTRUCTION REFERENCE (1/1) ",
+          (color = "black"),
+          (highlight = "white")
+        );
 
-            function draw_box (ctx) {
-                draw_box_single(ctx, 2, 2, 19, 19);
-                for (var i = 0; i < 16; i++) {
-                    for (var j = 0; j < 16; j++) {
-                        // var rand = Math.floor(Math.random() * 256);
-                        if (cursorX == i && cursorY == j) {
-                            draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii, color="black", highlight="white");
-                        } else { 
-                            draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii);
-                        }
-                    }
-                }
-            }
+        draw_paragraph(ctx, 24, 4, s);
 
-            function draw_stack(ctx) {
-                for (var i = 0; i < stack.length; i++) {
-                    hex = stack[i].toString(16).toUpperCase();
-                    if (hex.length == 1) {
-                        hex = "0" + hex;
-                    }
-                    draw_text(ctx, 22, 3 + i, " x" + hex);
-                }
+        draw_text(
+          ctx,
+          36,
+          37,
+          " PAGE UP / PAGE DOWN ",
+          (color = "black"),
+          (highlight = "white")
+        );
+      }
 
-            }
+      function draw_run_screen(ctx, canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
+        draw_text(ctx, 22, 1, "stack");
+        draw_box_horizontal_divide(ctx, 2, 21, 26);
+        draw_stack(ctx);
+        draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
+        draw_box_vertical_divide(ctx, 26, 0, consoleY - 1);
+        draw_box(ctx);
+        draw_text(ctx, 2, 21, "DIR:");
+        draw_char(ctx, 6, 21, direction.ascii);
+        draw_text(ctx, 2, 23, "TAB:  Edit Mode", (color = "gray"));
+        // draw_text(ctx, 2, 24, "ENTER:Run/Stop", color='gray');
+        draw_text(ctx, 2, 24, "SPACE:Step", (color = "gray"));
+        draw_text(ctx, 2, 25, "R:    Reset", (color = "gray"));
+        draw_text(ctx, 3, 2, "RUN", (color = "white"));
+        for (var i = 0; i < consoleX; i++) {
+          draw_text(ctx, i, 0, " ", (color = "white"), (highlight = "white"));
+          draw_text(
+            ctx,
+            i,
+            consoleY - 1,
+            " ",
+            (color = "white"),
+            (highlight = "white")
+          );
+        }
+        draw_text(
+          ctx,
+          1,
+          0,
+          "C:\\\\STOOP.exe > PROBLEM 2",
+          (color = "black"),
+          (highlight = "white")
+        );
+        draw_text(
+          ctx,
+          44,
+          2,
+          " CONSOLE ",
+          (color = "black"),
+          (highlight = "white")
+        );
+        draw_text(ctx, 28, 3, ">");
+        draw_text(ctx, 29, 3, output);
+      }
+    </script>
+    <style>
+      body {
+        background-color: black;
+      }
 
-            function draw_screen (ctx, canvas) {
-                if (current_state == state.EDIT) {
-                    draw_edit_screen (ctx, canvas);
-                } else if (current_state == state.RUN) {
-                    draw_run_screen (ctx, canvas)
-                }
-            }
-
-            function draw_edit_screen (ctx, canvas) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
-                draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
-                draw_box(ctx);
-                draw_text(ctx, 2, 21, "DIR:");
-                draw_char(ctx, 6, 21, direction.ascii)
-                draw_text(ctx, 3, 2, "EDIT", color='white');
-                draw_text(ctx, 2, 23, "TAB:  Run Mode", color='gray');
-                for (var i = 0; i < consoleX; i++) {
-                    draw_text(ctx, i, 0, " ", color='white', highlight='white');
-                    draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
-                }
-                draw_text(ctx, 1, 0, "C:\\\\STOOP.exe > PROBLEM 2", color='black', highlight='white');
-                
-                // var s = "Problem 2 - The Stack\n" + 
-                //     "\n" + 
-                //     "A STOOP program has a pointer which moves in a given\n" + 
-                //     "direction, manipulating the stack as it evaluates\n" +
-                //     "the square.\n" +
-                //     "\n" +
-                //     "Write a program that takes numbers (0-9) from the\n" +
-                //     "stack and prints the associated ASCII number.\n" +
-                //     "\n" +
-                //     "You may find the following commands helpful:\n" +
-                //     "\n" +
-                //     "+: Pops the top two elements from the stack, computes\n" +
-                //     "   the sum, and places the result on the stack\n" +
-                //     "\n" +
-                //     "*: Pops the top two elements from the stack, computes\n" +
-                //     "   the product, and places the result on the stack\n" +
-                //     "\n" +
-                //     "p: Pops the top of the stack and prints the\n" +
-                //     "   associated ASCII number\n" +
-                //     "\n" +
-                //     "_: Checks if the stack is empty. If so, the pointer\n" +
-                //     "   is rotated clockwise. Otherwise, nothing happens\n"
-                var s = 
-                String.fromCharCode(24) + String.fromCharCode(25) + String.fromCharCode(26) + String.fromCharCode(27) + 
-                    " : Changes the pointer to move in the direction the \n" +
-                    "       arrow is pointing (Shift + Arrow Key)\n" +
-                    "\n" +
-                    "0-F  : Adds hex number to the top of the stack\n" +
-                    "\n" +
-                    "+*   : Pops the top two elements from the stack, computes\n" +
-                    "       the sum/product, and places the result on the stack\n" +
-                    "\n" +
-                    "-/%  : Pops the top two elements from the stack, computes\n" +
-                    "       the subtraction/division/modulus, and places the \n" +
-                    "       result on the stack. NOTE: The top of the stack is \n" +
-                    "       the numerator\n" +
-                    "\n" +
-                    "p    : Pops the top of the stack and prints the\n" +
-                    "       associated ASCII number\n" +
-                    "\n" +
-                    // String.fromCharCode(174) + String.fromCharCode(175) + 
-                    // "   : Pops the top of the stack and prints the\n" +
-                    // "       associated ASCII number\n" +
-                    // "\n" +
-                    "_    : Checks if the stack is empty. If so, the pointer\n" +
-                    "       is rotated clockwise. Otherwise, nothing happens\n" +
-                    "\n" +
-                    "?    : Checks if the top of the stack is zero. If so, \n" +
-                    "       the pointer is rotated clockwise. Otherwise,\n" +
-                    "       nothing happens\n" +
-                    "\n"+
-                    String.fromCharCode(127) + 
-                    "    : Duplicates the top of the stack (Shift + D)\n" +
-                    "\n"+
-                    "^    : Pops the top of the stack\n" +
-                    "\n";
-                ;
-                draw_text(ctx, 33, 2, " INSTRUCTION REFERENCE (1/1) ", color='black', highlight='white');
-                
-                draw_paragraph(ctx, 24, 4, s);
-
-                draw_text(ctx, 36, 37, " PAGE UP / PAGE DOWN ", color='black', highlight='white');
-
-            }
-
-            function draw_run_screen (ctx, canvas) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
-                draw_text(ctx, 22, 1, "stack");
-                draw_box_horizontal_divide(ctx, 2, 21, 26);
-                draw_stack(ctx);
-                draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
-                draw_box_vertical_divide(ctx, 26, 0, consoleY - 1);
-                draw_box(ctx);
-                draw_text(ctx, 2, 21, "DIR:");
-                draw_char(ctx, 6, 21, direction.ascii)
-                draw_text(ctx, 2, 23, "TAB:  Edit Mode", color='gray');
-                // draw_text(ctx, 2, 24, "ENTER:Run/Stop", color='gray');
-                draw_text(ctx, 2, 24, "SPACE:Step", color='gray');
-                draw_text(ctx, 2, 25, "R:    Reset", color='gray');
-                draw_text(ctx, 3, 2, "RUN", color='white');
-                for (var i = 0; i < consoleX; i++) {
-                    draw_text(ctx, i, 0, " ", color='white', highlight='white');
-                    draw_text(ctx, i, consoleY-1, " ", color='white', highlight='white');
-                }
-                draw_text(ctx, 1, 0, "C:\\\\STOOP.exe > PROBLEM 2", color='black', highlight='white');
-                draw_text(ctx, 44, 2, " CONSOLE ", color='black', highlight='white');
-                draw_text(ctx, 28, 3, ">");
-                draw_text(ctx, 29, 3, output);
-            }
-            
-        </script>
-        <style>
-            body {
-                background-color: black;
-            } 
-
-            canvas{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                margin-right: -50%;
-                transform: translate(-50%, -50%);
-            }
-        </style>
-    </head>
-    <body>
-        <canvas id="myCanvas"></canvas>
-    </body>
+      canvas {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+  </body>
 </html>
