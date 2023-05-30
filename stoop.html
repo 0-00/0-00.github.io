@@ -2,6 +2,23 @@
   <head>
     <title>STÖÖP (Stack-based lööpy language)</title>
     <script type="text/javascript" src="cp437.js"></script>
+    <script id="vertex" type="x-shader">
+      attribute vec2 coordinates;
+      attribute vec2 offset;
+
+      void main() {
+          gl_Position = vec4(coordinates+offset, 0.0, 1.0);
+      }
+    </script>
+    <script id="fragment" type="x-shader">
+      #ifdef GL_ES
+      precision highp float;
+      #endif
+
+      void main() {
+          gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+      }
+    </script>
     <script type="text/javascript">
       let cursorX = 0;
       let cursorY = 0;
@@ -13,7 +30,7 @@
       var fontsizeY = 10;
       var consoleX = 72;
       var consoleY = 40;
-      var scale = 2;
+      var scale = 1.5;
 
       let ctrl = false;
       let shift = false;
@@ -362,6 +379,136 @@
         }
       }
 
+      var offset_data = [];
+
+      const add_pixel = (x, y) => {
+        var newX = (2 * x) / (consoleX * fontsizeX) - 1;
+        var newY = -((2 * y) / (consoleY * fontsizeY) - 1);
+        offset_data.push(newX, newY);
+      };
+
+      function initGL(canvas) {
+        var gl_props = {};
+
+        gl = canvas.getContext("webgl2", { antialias: false });
+
+        /*====================== Init Shaders =======================*/
+
+        var v = document.getElementById("vertex").firstChild.nodeValue;
+        var f = document.getElementById("fragment").firstChild.nodeValue;
+
+        var vs = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vs, v);
+        gl.compileShader(vs);
+
+        var fs = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fs, f);
+        gl.compileShader(fs);
+
+        gl_props.program = gl.createProgram();
+        gl.attachShader(gl_props.program, vs);
+        gl.attachShader(gl_props.program, fs);
+        gl.linkProgram(gl_props.program);
+
+        gl.useProgram(gl_props.program);
+
+        var offset_attrib_loc = gl.getAttribLocation(
+          gl_props.program,
+          "offset"
+        );
+        var coordinates_loc = gl.getAttribLocation(
+          gl_props.program,
+          "coordinates"
+        );
+
+        /*========== Defining and storing the geometry =========*/
+
+        var pixel_unit_x = 1 / (consoleX * fontsizeX);
+        var pixel_unit_y = 1 / (consoleY * fontsizeY);
+
+        var quad_vertices = new Float32Array([
+          -pixel_unit_x,
+          -pixel_unit_y,
+          pixel_unit_x,
+          -pixel_unit_y,
+          -pixel_unit_x,
+          pixel_unit_y,
+          -pixel_unit_x,
+          pixel_unit_y,
+          pixel_unit_x,
+          -pixel_unit_y,
+          pixel_unit_x,
+          pixel_unit_y,
+        ]);
+
+        var offset_array = new Float32Array(offset_data);
+
+        gl_props.vertex_count = quad_vertices.length / 2;
+        gl_props.instance_count = offset_data.length / 2;
+
+        // Create and bind VAO
+        gl_props.vao = gl.createVertexArray();
+        gl.bindVertexArray(gl_props.vao);
+
+        // Create and populate quad VBO
+        var vbuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, quad_vertices, gl.STATIC_DRAW);
+
+        // Point coordinates attribute to quad VBO
+        gl.enableVertexAttribArray(coordinates_loc);
+        gl.vertexAttribPointer(coordinates_loc, 2, gl.FLOAT, false, 0, 0);
+
+        // Create and populate instance VBO
+        gl_props.instance_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl_props.instance_buffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array(offset_data),
+          gl.DYNAMIC_DRAW
+        );
+
+        // Point offsets attribute to instance VBO
+        gl.enableVertexAttribArray(offset_attrib_loc);
+        gl.vertexAttribPointer(offset_attrib_loc, 2, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribDivisor(offset_attrib_loc, 1);
+
+        // Unbind buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        return { gl: gl, ...gl_props };
+      }
+
+      function drawGL(canvas, gl_props) {
+        gl_props.instance_count = offset_data.length / 2;
+
+        /*============= Clear canvas ================*/
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        // Create and populate instance VBO
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl_props.instance_buffer);
+        console.log(gl_props.instance_buffer, offset_data);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array(offset_data),
+          gl.DYNAMIC_DRAW
+        );
+
+        /*============= Drawing the Quads ================*/
+
+        gl.useProgram(gl_props.program);
+        gl.bindVertexArray(gl_props.vao);
+        gl.drawArraysInstanced(
+          gl.TRIANGLES,
+          0,
+          gl_props.vertex_count,
+          gl_props.instance_count
+        );
+      }
+
       function mod(n, m) {
         return ((n % m) + m) % m;
       }
@@ -439,14 +586,13 @@
         document.addEventListener("resize", function (event) {
           console.log("resize event");
         });
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
+        var canvas = document.getElementById("myCanvas");
 
-        c.width = consoleX * fontsizeX * scale;
-        c.height = consoleY * fontsizeY * scale;
+        canvas.width = consoleX * fontsizeX * scale;
+        canvas.height = consoleY * fontsizeY * scale;
 
-        // drawbox();
-        draw_screen(ctx, c);
+        const { gl, ...gl_props } = initGL(canvas);
+        draw_screen(gl, gl_props, canvas);
 
         function logMessage(message) {
           console.log(message);
@@ -610,22 +756,22 @@
                 tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
                 break;
             }
-            draw_screen(ctx, c);
+            draw_screen(gl, c);
           } else if (current_state == state.RUN) {
             switch (e.key) {
               case " ":
                 console.log("step.");
                 step();
-                draw_screen(ctx, c);
+                draw_screen(gl, c);
                 break;
               case "Enter":
                 console.log("step.");
                 run = !run;
-                draw_screen(ctx, c);
+                draw_screen(gl, c);
                 break;
               case "r":
                 reset();
-                draw_screen(ctx, c);
+                draw_screen(gl, c);
                 break;
             }
           }
@@ -638,7 +784,7 @@
               current_state = state.EDIT;
               reset();
             }
-            draw_screen(ctx, c);
+            draw_screen(gl, c);
           }
 
           logMessage(`Key "${e.key}" pressed  [event: keydown]`);
@@ -654,7 +800,6 @@
       };
 
       function draw_char(
-        ctx,
         textPosX,
         textPosY,
         char_index,
@@ -663,28 +808,27 @@
         pixeloffsetX = 0,
         pixeloffsetY = 0
       ) {
-        ctx.fillStyle = highlight;
-        ctx.fillRect(
-          (textPosX * fontsizeX + pixeloffsetX) * scale,
-          (textPosY * fontsizeY + pixeloffsetY) * scale,
-          scale * fontsizeX,
-          scale * fontsizeY
-        );
-        ctx.fillStyle = color;
+        gl.fillStyle = highlight;
+        // gl.fillRect(
+        //   (textPosX * fontsizeX + pixeloffsetX) * scale,
+        //   (textPosY * fontsizeY + pixeloffsetY) * scale,
+        //   scale * fontsizeX,
+        //   scale * fontsizeY
+        // );
+        // gl.fillStyle = color;
 
         for (var y = 0; y < fontsizeY; y++) {
           for (var x = 0; x < fontsizeX; x++) {
             if (cp437[char_index][x + y * fontsizeY] == 1) {
               var posX = textPosX * fontsizeX + x + pixeloffsetX;
               var posY = textPosY * fontsizeY + y + pixeloffsetY;
-              ctx.fillRect(posX * scale, posY * scale, scale, scale);
+              add_pixel(posX, posY);
             }
           }
         }
       }
 
       function draw_text(
-        ctx,
         textPosX,
         textPosY,
         text,
@@ -693,7 +837,6 @@
       ) {
         for (var i = 0; i < text.length; i++) {
           draw_char(
-            ctx,
             textPosX + i,
             textPosY,
             text.charCodeAt(i),
@@ -705,7 +848,6 @@
       }
 
       function draw_paragraph(
-        ctx,
         textPosX,
         textPosY,
         text,
@@ -717,7 +859,6 @@
           var line = lines[j];
           for (var i = 0; i < line.length; i++) {
             draw_char(
-              ctx,
               textPosX + i,
               textPosY + j,
               line.charCodeAt(i),
@@ -729,62 +870,61 @@
         }
       }
 
-      function draw_box_single(ctx, minX, minY, maxX, maxY) {
+      function draw_box_single(minX, minY, maxX, maxY) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(ctx, i, minY, 196); // ─
-          draw_char(ctx, i, maxY, 196); // ─
+          draw_char(i, minY, 196); // ─
+          draw_char(i, maxY, 196); // ─
         }
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(ctx, minX, i, 179); // │
-          draw_char(ctx, maxX, i, 179); // │
+          draw_char(minX, i, 179); // │
+          draw_char(maxX, i, 179); // │
         }
-        draw_char(ctx, minX, minY, 218); // ┌
-        draw_char(ctx, maxX, minY, 191); // ┐
-        draw_char(ctx, minX, maxY, 192); // └
-        draw_char(ctx, maxX, maxY, 217); // ┘
+        draw_char(minX, minY, 218); // ┌
+        draw_char(maxX, minY, 191); // ┐
+        draw_char(minX, maxY, 192); // └
+        draw_char(maxX, maxY, 217); // ┘
       }
 
-      function draw_box_double(ctx, minX, minY, maxX, maxY) {
+      function draw_box_double(minX, minY, maxX, maxY) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(ctx, i, minY, 205); // ═
-          draw_char(ctx, i, maxY, 205); // ═
+          draw_char(i, minY, 205); // ═
+          draw_char(i, maxY, 205); // ═
         }
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(ctx, minX, i, 186); // ║
-          draw_char(ctx, maxX, i, 186); // ║
+          draw_char(minX, i, 186); // ║
+          draw_char(maxX, i, 186); // ║
         }
-        draw_char(ctx, minX, minY, 201); // ╔
-        draw_char(ctx, maxX, minY, 187); // ╗
-        draw_char(ctx, minX, maxY, 200); // ╚
-        draw_char(ctx, maxX, maxY, 188); // ╝
+        draw_char(minX, minY, 201); // ╔
+        draw_char(maxX, minY, 187); // ╗
+        draw_char(minX, maxY, 200); // ╚
+        draw_char(maxX, maxY, 188); // ╝
       }
 
-      function draw_box_horizontal_divide(ctx, y, minX, maxX) {
+      function draw_box_horizontal_divide(y, minX, maxX) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(ctx, i, y, 196); // ─
-          draw_char(ctx, i, y, 196); // ─
+          draw_char(i, y, 196); // ─
+          draw_char(i, y, 196); // ─
         }
-        draw_char(ctx, minX, y, 195); //
-        draw_char(ctx, maxX, y, 180); //
+        draw_char(minX, y, 195); //
+        draw_char(maxX, y, 180); //
       }
 
-      function draw_box_vertical_divide(ctx, x, minY, maxY) {
+      function draw_box_vertical_divide(x, minY, maxY) {
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(ctx, x, i, 179); // │
-          draw_char(ctx, x, i, 179); // │
+          draw_char(x, i, 179); // │
+          draw_char(x, i, 179); // │
         }
-        draw_char(ctx, x, minY, 209); //
-        draw_char(ctx, x, maxY, 207); //
+        draw_char(x, minY, 209); //
+        draw_char(x, maxY, 207); //
       }
 
-      function draw_box(ctx) {
-        draw_box_single(ctx, 2, 2, 19, 19);
+      function draw_box() {
+        draw_box_single(2, 2, 19, 19);
         for (var i = 0; i < 16; i++) {
           for (var j = 0; j < 16; j++) {
             // var rand = Math.floor(Math.random() * 256);
             if (cursorX == i && cursorY == j) {
               draw_char(
-                ctx,
                 3 + i,
                 3 + j,
                 tokens[i + j * boxX].ascii,
@@ -792,43 +932,42 @@
                 (highlight = "white")
               );
             } else {
-              draw_char(ctx, 3 + i, 3 + j, tokens[i + j * boxX].ascii);
+              draw_char(3 + i, 3 + j, tokens[i + j * boxX].ascii);
             }
           }
         }
       }
 
-      function draw_stack(ctx) {
+      function draw_stack() {
         for (var i = 0; i < stack.length; i++) {
           hex = stack[i].toString(16).toUpperCase();
           if (hex.length == 1) {
             hex = "0" + hex;
           }
-          draw_text(ctx, 22, 3 + i, " x" + hex);
+          draw_text(22, 3 + i, " x" + hex);
         }
       }
 
-      function draw_screen(ctx, canvas) {
+      function draw_screen(gl, gl_props, canvas) {
         if (current_state == state.EDIT) {
-          draw_edit_screen(ctx, canvas);
+          draw_edit_screen(canvas);
         } else if (current_state == state.RUN) {
-          draw_run_screen(ctx, canvas);
+          draw_run_screen(canvas);
         }
+        drawGL(canvas, gl_props);
       }
 
-      function draw_edit_screen(ctx, canvas) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
-        draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
-        draw_box(ctx);
-        draw_text(ctx, 2, 21, "DIR:");
-        draw_char(ctx, 6, 21, direction.ascii);
-        draw_text(ctx, 3, 2, "EDIT", (color = "white"));
-        draw_text(ctx, 2, 23, "TAB:  Run Mode", (color = "gray"));
+      function draw_edit_screen(canvas) {
+        draw_box_double(0, 0, consoleX - 1, consoleY - 1);
+        draw_box_vertical_divide(21, 0, consoleY - 1);
+        draw_box();
+        draw_text(2, 21, "DIR:");
+        draw_char(6, 21, direction.ascii);
+        draw_text(3, 2, "EDIT", (color = "white"));
+        draw_text(2, 23, "TAB:  Run Mode", (color = "gray"));
         for (var i = 0; i < consoleX; i++) {
-          draw_text(ctx, i, 0, " ", (color = "white"), (highlight = "white"));
+          draw_text(i, 0, " ", (color = "white"), (highlight = "white"));
           draw_text(
-            ctx,
             i,
             consoleY - 1,
             " ",
@@ -837,7 +976,6 @@
           );
         }
         draw_text(
-          ctx,
           1,
           0,
           "C:\\\\STOOP.exe > PROBLEM 2",
@@ -905,7 +1043,6 @@
           "^    : Pops the top of the stack\n" +
           "\n";
         draw_text(
-          ctx,
           33,
           2,
           " INSTRUCTION REFERENCE (1/1) ",
@@ -913,10 +1050,9 @@
           (highlight = "white")
         );
 
-        draw_paragraph(ctx, 24, 4, s);
+        draw_paragraph(24, 4, s);
 
         draw_text(
-          ctx,
           36,
           37,
           " PAGE UP / PAGE DOWN ",
@@ -925,26 +1061,24 @@
         );
       }
 
-      function draw_run_screen(ctx, canvas) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw_box_double(ctx, 0, 0, consoleX - 1, consoleY - 1);
-        draw_text(ctx, 22, 1, "stack");
-        draw_box_horizontal_divide(ctx, 2, 21, 26);
-        draw_stack(ctx);
-        draw_box_vertical_divide(ctx, 21, 0, consoleY - 1);
-        draw_box_vertical_divide(ctx, 26, 0, consoleY - 1);
-        draw_box(ctx);
-        draw_text(ctx, 2, 21, "DIR:");
-        draw_char(ctx, 6, 21, direction.ascii);
-        draw_text(ctx, 2, 23, "TAB:  Edit Mode", (color = "gray"));
-        // draw_text(ctx, 2, 24, "ENTER:Run/Stop", color='gray');
-        draw_text(ctx, 2, 24, "SPACE:Step", (color = "gray"));
-        draw_text(ctx, 2, 25, "R:    Reset", (color = "gray"));
-        draw_text(ctx, 3, 2, "RUN", (color = "white"));
+      function draw_run_screen(canvas) {
+        draw_box_double(0, 0, consoleX - 1, consoleY - 1);
+        draw_text(22, 1, "stack");
+        draw_box_horizontal_divide(gl, 2, 21, 26);
+        draw_stack();
+        draw_box_vertical_divide(21, 0, consoleY - 1);
+        draw_box_vertical_divide(26, 0, consoleY - 1);
+        draw_box();
+        draw_text(2, 21, "DIR:");
+        draw_char(6, 21, direction.ascii);
+        draw_text(2, 23, "TAB:  Edit Mode", (color = "gray"));
+        // draw_text(gl, 2, 24, "ENTER:Run/Stop", color='gray');
+        draw_text(2, 24, "SPACE:Step", (color = "gray"));
+        draw_text(2, 25, "R:    Reset", (color = "gray"));
+        draw_text(3, 2, "RUN", (color = "white"));
         for (var i = 0; i < consoleX; i++) {
-          draw_text(ctx, i, 0, " ", (color = "white"), (highlight = "white"));
+          draw_text(i, 0, " ", (color = "white"), (highlight = "white"));
           draw_text(
-            ctx,
             i,
             consoleY - 1,
             " ",
@@ -953,23 +1087,15 @@
           );
         }
         draw_text(
-          ctx,
           1,
           0,
           "C:\\\\STOOP.exe > PROBLEM 2",
           (color = "black"),
           (highlight = "white")
         );
-        draw_text(
-          ctx,
-          44,
-          2,
-          " CONSOLE ",
-          (color = "black"),
-          (highlight = "white")
-        );
-        draw_text(ctx, 28, 3, ">");
-        draw_text(ctx, 29, 3, output);
+        draw_text(44, 2, " CONSOLE ", (color = "black"), (highlight = "white"));
+        draw_text(28, 3, ">");
+        draw_text(29, 3, output);
       }
     </script>
     <style>
@@ -983,6 +1109,7 @@
         left: 50%;
         margin-right: -50%;
         transform: translate(-50%, -50%);
+        image-rendering: pixelated;
       }
     </style>
   </head>
