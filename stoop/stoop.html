@@ -56,7 +56,7 @@
           action: function () {
             direction = tok;
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return e.key == "ArrowUp" && shift_pressed;
           },
         },
@@ -65,7 +65,7 @@
           action: function () {
             direction = tok;
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return e.key == "ArrowDown" && shift_pressed;
           },
         },
@@ -74,7 +74,7 @@
           action: function () {
             direction = tok;
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return e.key == "ArrowLeft" && shift_pressed;
           },
         },
@@ -83,14 +83,14 @@
           action: function () {
             direction = tok;
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return e.key == "ArrowRight" && shift_pressed;
           },
         },
         EMPTY: {
           ascii: " ".charCodeAt(0),
           action: function () {},
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -99,7 +99,7 @@
           action: function () {
             stack.push(0);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -108,7 +108,7 @@
           action: function () {
             stack.push(1);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -117,7 +117,7 @@
           action: function () {
             stack.push(2);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -126,7 +126,7 @@
           action: function () {
             stack.push(3);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -135,7 +135,7 @@
           action: function () {
             stack.push(4);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -144,7 +144,7 @@
           action: function () {
             stack.push(5);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -153,7 +153,7 @@
           action: function () {
             stack.push(6);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -162,7 +162,7 @@
           action: function () {
             stack.push(7);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -171,7 +171,7 @@
           action: function () {
             stack.push(8);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -180,7 +180,7 @@
           action: function () {
             stack.push(9);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -189,7 +189,7 @@
           action: function () {
             stack.push(10);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -198,7 +198,7 @@
           action: function () {
             stack.push(11);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -207,7 +207,7 @@
           action: function () {
             stack.push(12);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -216,7 +216,7 @@
           action: function () {
             stack.push(13);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -225,7 +225,7 @@
           action: function () {
             stack.push(14);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -234,7 +234,7 @@
           action: function () {
             stack.push(15);
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -247,7 +247,7 @@
               stack.push(b + a);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -260,7 +260,7 @@
               stack.push(b - a);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -273,7 +273,7 @@
               stack.push(b * a);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -286,7 +286,7 @@
               stack.push(Math.floor(b / a));
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -299,7 +299,7 @@
               stack.push(b % a);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -307,10 +307,10 @@
           ascii: "_".charCodeAt(0),
           action: function () {
             if (stack.length == 0) {
-              rotate_clockwise();
+              rotateClockwise();
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -318,10 +318,10 @@
           ascii: "?".charCodeAt(0),
           action: function () {
             if (stack[stack.length - 1] == 0) {
-              rotate_clockwise();
+              rotateClockwise();
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -332,7 +332,7 @@
               stack.push(stack[stack.length - 1]);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -341,7 +341,7 @@
           action: function () {
             stack.pop();
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -353,7 +353,7 @@
               output += String.fromCharCode(a);
             }
           },
-          key_press: function (shift_pressed, key) {
+          isKeyPressed: function (shift_pressed, key) {
             return false;
           },
         },
@@ -381,7 +381,7 @@
 
       var offset_data = [];
 
-      const add_pixel = (x, y) => {
+      const addPixel = (x, y) => {
         var newX = (2 * x) / (consoleX * fontsizeX) - 1;
         var newY = -((2 * y) / (consoleY * fontsizeY) - 1);
         offset_data.push(newX, newY);
@@ -527,7 +527,7 @@
         // document.getElementById("output").innerHTML = "";
       }
 
-      function update_stack() {
+      function updateStack() {
         s = "| ";
         for (let i = 0; i < stack.length; i++) {
           s += stack[i] + " | ";
@@ -535,7 +535,7 @@
         // document.getElementById("stack").innerHTML = s;
       }
 
-      function rotate_clockwise() {
+      function rotateClockwise() {
         if (direction == token.RIGHT) {
           direction = token.DOWN;
         } else if (direction == token.DOWN) {
@@ -550,11 +550,11 @@
       function step() {
         tok = tokens[cursorY * boxY + cursorX];
         tok.action();
-        update_stack();
-        next_position();
+        updateStack();
+        nextPosition();
       }
 
-      function next_position() {
+      function nextPosition() {
         switch (direction) {
           case token.RIGHT:
             cursorX += 1;
@@ -592,7 +592,7 @@
         canvas.height = consoleY * fontsizeY * scale;
 
         const { gl, ...gl_props } = initGL(canvas);
-        draw_screen(gl, gl_props, canvas);
+        drawScreen(gl, gl_props, canvas);
 
         function logMessage(message) {
           console.log(message);
@@ -635,7 +635,7 @@
 
             for (const tok in token) {
               console.log(tok);
-              if (tok.key_press(shift, e.key)) {
+              if (tok.isKeyPressed(shift, e.key)) {
                 tokens[cursorY * boxY + cursorX] = tok;
               }
             }
@@ -756,22 +756,22 @@
                 tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
                 break;
             }
-            draw_screen(gl, c);
+            drawScreen(gl, c);
           } else if (current_state == state.RUN) {
             switch (e.key) {
               case " ":
                 console.log("step.");
                 step();
-                draw_screen(gl, c);
+                drawScreen(gl, c);
                 break;
               case "Enter":
                 console.log("step.");
                 run = !run;
-                draw_screen(gl, c);
+                drawScreen(gl, c);
                 break;
               case "r":
                 reset();
-                draw_screen(gl, c);
+                drawScreen(gl, c);
                 break;
             }
           }
@@ -784,7 +784,7 @@
               current_state = state.EDIT;
               reset();
             }
-            draw_screen(gl, c);
+            drawScreen(gl, c);
           }
 
           logMessage(`Key "${e.key}" pressed  [event: keydown]`);
@@ -799,7 +799,7 @@
         });
       };
 
-      function draw_char(
+      function drawChar(
         textPosX,
         textPosY,
         char_index,
@@ -822,13 +822,13 @@
             if (cp437[char_index][x + y * fontsizeY] == 1) {
               var posX = textPosX * fontsizeX + x + pixeloffsetX;
               var posY = textPosY * fontsizeY + y + pixeloffsetY;
-              add_pixel(posX, posY);
+              addPixel(posX, posY);
             }
           }
         }
       }
 
-      function draw_text(
+      function drawText(
         textPosX,
         textPosY,
         text,
@@ -836,7 +836,7 @@
         highlight = "black"
       ) {
         for (var i = 0; i < text.length; i++) {
-          draw_char(
+          drawChar(
             textPosX + i,
             textPosY,
             text.charCodeAt(i),
@@ -847,7 +847,7 @@
         }
       }
 
-      function draw_paragraph(
+      function drawParagraph(
         textPosX,
         textPosY,
         text,
@@ -858,7 +858,7 @@
         for (var j = 0; j < lines.length; j++) {
           var line = lines[j];
           for (var i = 0; i < line.length; i++) {
-            draw_char(
+            drawChar(
               textPosX + i,
               textPosY + j,
               line.charCodeAt(i),
@@ -870,61 +870,61 @@
         }
       }
 
-      function draw_box_single(minX, minY, maxX, maxY) {
+      function drawBoxSingle(minX, minY, maxX, maxY) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(i, minY, 196); // ─
-          draw_char(i, maxY, 196); // ─
+          drawChar(i, minY, 196); // ─
+          drawChar(i, maxY, 196); // ─
         }
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(minX, i, 179); // │
-          draw_char(maxX, i, 179); // │
+          drawChar(minX, i, 179); // │
+          drawChar(maxX, i, 179); // │
         }
-        draw_char(minX, minY, 218); // ┌
-        draw_char(maxX, minY, 191); // ┐
-        draw_char(minX, maxY, 192); // └
-        draw_char(maxX, maxY, 217); // ┘
+        drawChar(minX, minY, 218); // ┌
+        drawChar(maxX, minY, 191); // ┐
+        drawChar(minX, maxY, 192); // └
+        drawChar(maxX, maxY, 217); // ┘
       }
 
-      function draw_box_double(minX, minY, maxX, maxY) {
+      function drawBoxDouble(minX, minY, maxX, maxY) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(i, minY, 205); // ═
-          draw_char(i, maxY, 205); // ═
+          drawChar(i, minY, 205); // ═
+          drawChar(i, maxY, 205); // ═
         }
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(minX, i, 186); // ║
-          draw_char(maxX, i, 186); // ║
+          drawChar(minX, i, 186); // ║
+          drawChar(maxX, i, 186); // ║
         }
-        draw_char(minX, minY, 201); // ╔
-        draw_char(maxX, minY, 187); // ╗
-        draw_char(minX, maxY, 200); // ╚
-        draw_char(maxX, maxY, 188); // ╝
+        drawChar(minX, minY, 201); // ╔
+        drawChar(maxX, minY, 187); // ╗
+        drawChar(minX, maxY, 200); // ╚
+        drawChar(maxX, maxY, 188); // ╝
       }
 
-      function draw_box_horizontal_divide(y, minX, maxX) {
+      function drawBoxHorizontalDivide(y, minX, maxX) {
         for (var i = minX + 1; i < maxX; i++) {
-          draw_char(i, y, 196); // ─
-          draw_char(i, y, 196); // ─
+          drawChar(i, y, 196); // ─
+          drawChar(i, y, 196); // ─
         }
-        draw_char(minX, y, 195); //
-        draw_char(maxX, y, 180); //
+        drawChar(minX, y, 195); //
+        drawChar(maxX, y, 180); //
       }
 
-      function draw_box_vertical_divide(x, minY, maxY) {
+      function drawBoxVerticalDivide(x, minY, maxY) {
         for (var i = minY + 1; i < maxY; i++) {
-          draw_char(x, i, 179); // │
-          draw_char(x, i, 179); // │
+          drawChar(x, i, 179); // │
+          drawChar(x, i, 179); // │
         }
-        draw_char(x, minY, 209); //
-        draw_char(x, maxY, 207); //
+        drawChar(x, minY, 209); //
+        drawChar(x, maxY, 207); //
       }
 
-      function draw_box() {
-        draw_box_single(2, 2, 19, 19);
+      function drawBox() {
+        drawBoxSingle(2, 2, 19, 19);
         for (var i = 0; i < 16; i++) {
           for (var j = 0; j < 16; j++) {
             // var rand = Math.floor(Math.random() * 256);
             if (cursorX == i && cursorY == j) {
-              draw_char(
+              drawChar(
                 3 + i,
                 3 + j,
                 tokens[i + j * boxX].ascii,
@@ -932,42 +932,42 @@
                 (highlight = "white")
               );
             } else {
-              draw_char(3 + i, 3 + j, tokens[i + j * boxX].ascii);
+              drawChar(3 + i, 3 + j, tokens[i + j * boxX].ascii);
             }
           }
         }
       }
 
-      function draw_stack() {
+      function drawStack() {
         for (var i = 0; i < stack.length; i++) {
           hex = stack[i].toString(16).toUpperCase();
           if (hex.length == 1) {
             hex = "0" + hex;
           }
-          draw_text(22, 3 + i, " x" + hex);
+          drawText(22, 3 + i, " x" + hex);
         }
       }
 
-      function draw_screen(gl, gl_props, canvas) {
+      function drawScreen(gl, gl_props, canvas) {
         if (current_state == state.EDIT) {
-          draw_edit_screen(canvas);
+          drawEditScreen(canvas);
         } else if (current_state == state.RUN) {
-          draw_run_screen(canvas);
+          drawRunScreen(canvas);
         }
         drawGL(canvas, gl_props);
       }
 
-      function draw_edit_screen(canvas) {
-        draw_box_double(0, 0, consoleX - 1, consoleY - 1);
-        draw_box_vertical_divide(21, 0, consoleY - 1);
-        draw_box();
-        draw_text(2, 21, "DIR:");
-        draw_char(6, 21, direction.ascii);
-        draw_text(3, 2, "EDIT", (color = "white"));
-        draw_text(2, 23, "TAB:  Run Mode", (color = "gray"));
+      function drawEditScreen(canvas) {
+        drawBoxDouble(0, 0, consoleX - 1, consoleY - 1);
+        drawBoxVerticalDivide(21, 0, consoleY - 1);
+        drawBox();
+        drawText(2, 21, "DIR:");
+        drawChar(6, 21, direction.ascii);
+        drawText(3, 2, "EDIT", (color = "white"));
+        drawText(2, 23, "TAB:  Run Mode", (color = "gray"));
         for (var i = 0; i < consoleX; i++) {
-          draw_text(i, 0, " ", (color = "white"), (highlight = "white"));
-          draw_text(
+          drawText(i, 0, " ", (color = "white"), (highlight = "white"));
+          drawText(
             i,
             consoleY - 1,
             " ",
@@ -975,7 +975,7 @@
             (highlight = "white")
           );
         }
-        draw_text(
+        drawText(
           1,
           0,
           "C:\\\\STOOP.exe > PROBLEM 2",
@@ -1042,7 +1042,7 @@
           "\n" +
           "^    : Pops the top of the stack\n" +
           "\n";
-        draw_text(
+        drawText(
           33,
           2,
           " INSTRUCTION REFERENCE (1/1) ",
@@ -1050,9 +1050,9 @@
           (highlight = "white")
         );
 
-        draw_paragraph(24, 4, s);
+        drawParagraph(24, 4, s);
 
-        draw_text(
+        drawText(
           36,
           37,
           " PAGE UP / PAGE DOWN ",
@@ -1061,24 +1061,24 @@
         );
       }
 
-      function draw_run_screen(canvas) {
-        draw_box_double(0, 0, consoleX - 1, consoleY - 1);
-        draw_text(22, 1, "stack");
-        draw_box_horizontal_divide(gl, 2, 21, 26);
-        draw_stack();
-        draw_box_vertical_divide(21, 0, consoleY - 1);
-        draw_box_vertical_divide(26, 0, consoleY - 1);
-        draw_box();
-        draw_text(2, 21, "DIR:");
-        draw_char(6, 21, direction.ascii);
-        draw_text(2, 23, "TAB:  Edit Mode", (color = "gray"));
-        // draw_text(gl, 2, 24, "ENTER:Run/Stop", color='gray');
-        draw_text(2, 24, "SPACE:Step", (color = "gray"));
-        draw_text(2, 25, "R:    Reset", (color = "gray"));
-        draw_text(3, 2, "RUN", (color = "white"));
+      function drawRunScreen(canvas) {
+        drawBoxDouble(0, 0, consoleX - 1, consoleY - 1);
+        drawText(22, 1, "stack");
+        drawBoxHorizontalDivide(gl, 2, 21, 26);
+        drawStack();
+        drawBoxVerticalDivide(21, 0, consoleY - 1);
+        drawBoxVerticalDivide(26, 0, consoleY - 1);
+        drawBox();
+        drawText(2, 21, "DIR:");
+        drawChar(6, 21, direction.ascii);
+        drawText(2, 23, "TAB:  Edit Mode", (color = "gray"));
+        // drawText(gl, 2, 24, "ENTER:Run/Stop", color='gray');
+        drawText(2, 24, "SPACE:Step", (color = "gray"));
+        drawText(2, 25, "R:    Reset", (color = "gray"));
+        drawText(3, 2, "RUN", (color = "white"));
         for (var i = 0; i < consoleX; i++) {
-          draw_text(i, 0, " ", (color = "white"), (highlight = "white"));
-          draw_text(
+          drawText(i, 0, " ", (color = "white"), (highlight = "white"));
+          drawText(
             i,
             consoleY - 1,
             " ",
@@ -1086,16 +1086,16 @@
             (highlight = "white")
           );
         }
-        draw_text(
+        drawText(
           1,
           0,
           "C:\\\\STOOP.exe > PROBLEM 2",
           (color = "black"),
           (highlight = "white")
         );
-        draw_text(44, 2, " CONSOLE ", (color = "black"), (highlight = "white"));
-        draw_text(28, 3, ">");
-        draw_text(29, 3, output);
+        drawText(44, 2, " CONSOLE ", (color = "black"), (highlight = "white"));
+        drawText(28, 3, ">");
+        drawText(29, 3, output);
       }
     </script>
     <style>
