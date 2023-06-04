@@ -2,6 +2,7 @@
   <head>
     <title>STÖÖP (Stack-based lööpy language)</title>
     <script type="text/javascript" src="cp437.js"></script>
+    <script type="text/javascript" src="commands.js"></script>
     <script id="vertex" type="x-shader">
       attribute vec2 coordinates;
       attribute vec2 offset;
@@ -36,346 +37,19 @@
       let shift = false;
       let run = false;
 
-      let output = "";
+      const getCommand = (name) => commands.find(({ name: n }) => n === name);
 
-      const state = {
-        EDIT: "edit",
-        RUN: "run",
+      let state = {
+        mode: "EDIT",
+        output: "",
+        direction: "RIGHT",
+        stack: [],
       };
-
-      const dir = {
-        UP: 0,
-        DOWN: 1,
-        LEFT: 2,
-        RIGHT: 3,
-      };
-
-      const token = {
-        UP: {
-          ascii: 24,
-          action: function () {
-            direction = tok;
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return e.key == "ArrowUp" && shift_pressed;
-          },
-        },
-        DOWN: {
-          ascii: 25,
-          action: function () {
-            direction = tok;
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return e.key == "ArrowDown" && shift_pressed;
-          },
-        },
-        LEFT: {
-          ascii: 27,
-          action: function () {
-            direction = tok;
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return e.key == "ArrowLeft" && shift_pressed;
-          },
-        },
-        RIGHT: {
-          ascii: 26,
-          action: function () {
-            direction = tok;
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return e.key == "ArrowRight" && shift_pressed;
-          },
-        },
-        EMPTY: {
-          ascii: " ".charCodeAt(0),
-          action: function () {},
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        ZERO: {
-          ascii: "0".charCodeAt(0),
-          action: function () {
-            stack.push(0);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        ONE: {
-          ascii: "1".charCodeAt(0),
-          action: function () {
-            stack.push(1);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        TWO: {
-          ascii: "2".charCodeAt(0),
-          action: function () {
-            stack.push(2);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        THREE: {
-          ascii: "3".charCodeAt(0),
-          action: function () {
-            stack.push(3);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        FOUR: {
-          ascii: "4".charCodeAt(0),
-          action: function () {
-            stack.push(4);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        FIVE: {
-          ascii: "5".charCodeAt(0),
-          action: function () {
-            stack.push(5);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        SIX: {
-          ascii: "6".charCodeAt(0),
-          action: function () {
-            stack.push(6);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        SEVEN: {
-          ascii: "7".charCodeAt(0),
-          action: function () {
-            stack.push(7);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        EIGHT: {
-          ascii: "8".charCodeAt(0),
-          action: function () {
-            stack.push(8);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        NINE: {
-          ascii: "9".charCodeAt(0),
-          action: function () {
-            stack.push(9);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        A: {
-          ascii: "A".charCodeAt(0),
-          action: function () {
-            stack.push(10);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        B: {
-          ascii: "B".charCodeAt(0),
-          action: function () {
-            stack.push(11);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        C: {
-          ascii: "C".charCodeAt(0),
-          action: function () {
-            stack.push(12);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        D: {
-          ascii: "D".charCodeAt(0),
-          action: function () {
-            stack.push(13);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        E: {
-          ascii: "E".charCodeAt(0),
-          action: function () {
-            stack.push(14);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        F: {
-          ascii: "F".charCodeAt(0),
-          action: function () {
-            stack.push(15);
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        ADD: {
-          ascii: "+".charCodeAt(0),
-          action: function () {
-            if (stack.length > 1) {
-              a = stack.pop();
-              b = stack.pop();
-              stack.push(b + a);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        SUB: {
-          ascii: "-".charCodeAt(0),
-          action: function () {
-            if (stack.length > 1) {
-              a = stack.pop();
-              b = stack.pop();
-              stack.push(b - a);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        MUL: {
-          ascii: "*".charCodeAt(0),
-          action: function () {
-            if (stack.length > 1) {
-              a = stack.pop();
-              b = stack.pop();
-              stack.push(b * a);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        DIV: {
-          ascii: "/".charCodeAt(0),
-          action: function () {
-            if (stack.length > 1) {
-              a = stack.pop();
-              b = stack.pop();
-              stack.push(Math.floor(b / a));
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        MOD: {
-          ascii: "%".charCodeAt(0),
-          action: function () {
-            if (stack.length > 1) {
-              a = stack.pop();
-              b = stack.pop();
-              stack.push(b % a);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        EMPTY_STACK: {
-          ascii: "_".charCodeAt(0),
-          action: function () {
-            if (stack.length == 0) {
-              rotateClockwise();
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        ZERO_TEST: {
-          ascii: "?".charCodeAt(0),
-          action: function () {
-            if (stack[stack.length - 1] == 0) {
-              rotateClockwise();
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        CLONE_TOP: {
-          ascii: 127,
-          action: function () {
-            if (stack.length > 0) {
-              stack.push(stack[stack.length - 1]);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        POP: {
-          ascii: "^".charCodeAt(0),
-          action: function () {
-            stack.pop();
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-        PRINT_CHAR: {
-          ascii: "p".charCodeAt(0),
-          action: function () {
-            if (stack.length > 0) {
-              a = stack.pop();
-              output += String.fromCharCode(a);
-            }
-          },
-          isKeyPressed: function (shift_pressed, key) {
-            return false;
-          },
-        },
-
-        // QUEUE: toggles reading the stack data as FIFO rather than LIFO
-
-        // COMMENTS: toggles actioning instructions
-
-        // READ INSTRUCTION : pops the top of the stack, and pushes the instruction at that index (xXY) to the stack
-
-        // WRITE INSTRUCTION :
-        // index          : top of stack (format 0xXY)
-        // instruction_id : second in stack
-        // writes instruction_id at index of tokens
-      };
-
-      current_state = state.EDIT;
 
       var tokens = [];
       for (let i = 0; i < boxY; i++) {
         for (let j = 0; j < boxX; j++) {
-          tokens[i * boxY + j] = token.EMPTY;
+          tokens[i * boxY + j] = getCommand("EMPTY");
         }
       }
 
@@ -512,59 +186,39 @@
         return ((n % m) + m) % m;
       }
 
-      direction = token.RIGHT;
+      direction = "RIGHT";
       stack = [];
 
       function reset() {
-        output = "";
+        state = {
+          mode: "EDIT",
+          output: "",
+          direction: "RIGHT",
+          stack: [],
+        };
         run = false;
-        direction = token.RIGHT;
-        stack = [];
         cursorX = 0;
         cursorY = 0;
-        // document.getElementById("stack").innerHTML = "";
-        // document.getElementById("output").innerHTML = "";
-      }
-
-      function updateStack() {
-        s = "| ";
-        for (let i = 0; i < stack.length; i++) {
-          s += stack[i] + " | ";
-        }
-        // document.getElementById("stack").innerHTML = s;
-      }
-
-      function rotateClockwise() {
-        if (direction == token.RIGHT) {
-          direction = token.DOWN;
-        } else if (direction == token.DOWN) {
-          direction = token.LEFT;
-        } else if (direction == token.LEFT) {
-          direction = token.UP;
-        } else if (direction == token.UP) {
-          direction = token.RIGHT;
-        }
       }
 
       function step() {
         tok = tokens[cursorY * boxY + cursorX];
-        tok.action();
-        updateStack();
+        state = tok.action(state);
         nextPosition();
       }
 
       function nextPosition() {
-        switch (direction) {
-          case token.RIGHT:
+        switch (state.direction) {
+          case "RIGHT":
             cursorX += 1;
             break;
-          case token.LEFT:
+          case "LEFT":
             cursorX -= 1;
             break;
-          case token.UP:
+          case "UP":
             cursorY -= 1;
             break;
-          case token.DOWN:
+          case "DOWN":
             cursorY += 1;
             break;
         }
@@ -598,11 +252,12 @@
         }
 
         document.body.addEventListener("keydown", (e) => {
-          if (current_state == state.EDIT) {
-            if (e.key == "Shift") {
+          const { key } = e;
+          if (state.mode == "EDIT") {
+            if (key == "Shift") {
               shift = true;
             }
-            if (e.key == "Control") {
+            if (key == "Control") {
               ctrl = true;
             }
             if (ctrl) {
@@ -614,176 +269,47 @@
                 console.log(s);
               }
             }
-            // if (shift) {
-            //     if (e.key == "ArrowLeft") {
-            //         tokens[cursorY*boxY+cursorX] = token.LEFT;
-            //     }
-            //     else if (e.key == "ArrowRight") {
-            //         tokens[cursorY*boxY+cursorX] = token.RIGHT;
-            //     }
-            //     else if (e.key == "ArrowUp") {
-            //         tokens[cursorY*boxY+cursorX] = token.UP;
-            //     }
-            //     else if (e.key == "ArrowDown") {
-            //         tokens[cursorY*boxY+cursorX] = token.DOWN;
-            //     }
-            //     else if (e.key == "D") {
-            //         tokens[cursorY*boxY+cursorX] = token.CLONE_TOP;
-            //     }
-            // }
 
-            for (const tok in token) {
-              console.log(tok);
-              if (tok.isKeyPressed(shift, e.key)) {
-                tokens[cursorY * boxY + cursorX] = tok;
-              }
+            const newCommand = commands.find(({ isKeyPressed }) =>
+              isKeyPressed(key, { shift, ctrl })
+            );
+            if (newCommand) tokens[cursorY * boxY + cursorX] = newCommand;
+            else {
+              if (e.key == "ArrowLeft") cursorX = mod(cursorX - 1, boxX);
+              else if (e.key == "ArrowRight") cursorX = mod(cursorX + 1, boxX);
+              else if (e.key == "ArrowUp") cursorY = mod(cursorY - 1, boxY);
+              else if (e.key == "ArrowDown") cursorY = mod(cursorY + 1, boxY);
             }
 
-            if (e.key == "ArrowLeft") {
-              cursorX = mod(cursorX - 1, boxX);
-            } else if (e.key == "ArrowRight") {
-              cursorX = mod(cursorX + 1, boxX);
-            } else if (e.key == "ArrowUp") {
-              cursorY = mod(cursorY - 1, boxY);
-            } else if (e.key == "ArrowDown") {
-              cursorY = mod(cursorY + 1, boxY);
-            }
-            switch (e.key) {
-              case " ":
-                tokens[cursorY * boxY + cursorX] = token.EMPTY;
-                break;
-              case "Delete":
-                tokens[cursorY * boxY + cursorX] = token.EMPTY;
-                break;
-              case "Backspace":
-                tokens[cursorY * boxY + cursorX] = token.EMPTY;
-                break;
-              case "0":
-                tokens[cursorY * boxY + cursorX] = token.ZERO;
-                break;
-              case "1":
-                tokens[cursorY * boxY + cursorX] = token.ONE;
-                break;
-              case "2":
-                tokens[cursorY * boxY + cursorX] = token.TWO;
-                break;
-              case "3":
-                tokens[cursorY * boxY + cursorX] = token.THREE;
-                break;
-              case "4":
-                tokens[cursorY * boxY + cursorX] = token.FOUR;
-                break;
-              case "5":
-                tokens[cursorY * boxY + cursorX] = token.FIVE;
-                break;
-              case "6":
-                tokens[cursorY * boxY + cursorX] = token.SIX;
-                break;
-              case "7":
-                tokens[cursorY * boxY + cursorX] = token.SEVEN;
-                break;
-              case "8":
-                tokens[cursorY * boxY + cursorX] = token.EIGHT;
-                break;
-              case "9":
-                tokens[cursorY * boxY + cursorX] = token.NINE;
-                break;
-              case "A":
-                tokens[cursorY * boxY + cursorX] = token.A;
-                break;
-              case "B":
-                tokens[cursorY * boxY + cursorX] = token.B;
-                break;
-              case "C":
-                tokens[cursorY * boxY + cursorX] = token.C;
-                break;
-              case "D":
-                tokens[cursorY * boxY + cursorX] = token.D;
-                break;
-              case "E":
-                tokens[cursorY * boxY + cursorX] = token.E;
-                break;
-              case "F":
-                tokens[cursorY * boxY + cursorX] = token.F;
-                break;
-              case "a":
-                tokens[cursorY * boxY + cursorX] = token.A;
-                break;
-              case "b":
-                tokens[cursorY * boxY + cursorX] = token.B;
-                break;
-              case "c":
-                tokens[cursorY * boxY + cursorX] = token.C;
-                break;
-              case "d":
-                tokens[cursorY * boxY + cursorX] = token.D;
-                break;
-              case "e":
-                tokens[cursorY * boxY + cursorX] = token.E;
-                break;
-              case "f":
-                tokens[cursorY * boxY + cursorX] = token.F;
-                break;
-              case "*":
-                tokens[cursorY * boxY + cursorX] = token.MUL;
-                break;
-              case "/":
-                tokens[cursorY * boxY + cursorX] = token.DIV;
-                break;
-              case "%":
-                tokens[cursorY * boxY + cursorX] = token.MOD;
-                break;
-              case "+":
-                tokens[cursorY * boxY + cursorX] = token.ADD;
-                break;
-              case "-":
-                tokens[cursorY * boxY + cursorX] = token.SUB;
-                break;
-              case "_":
-                tokens[cursorY * boxY + cursorX] = token.EMPTY_STACK;
-                break;
-              case "?":
-                tokens[cursorY * boxY + cursorX] = token.ZERO_TEST;
-                break;
-              case "^":
-                tokens[cursorY * boxY + cursorX] = token.POP;
-                break;
-              case "p":
-                tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
-                break;
-              case "P":
-                tokens[cursorY * boxY + cursorX] = token.PRINT_CHAR;
-                break;
-            }
-            drawScreen(gl, c);
-          } else if (current_state == state.RUN) {
+            drawScreen(gl, gl_props, canvas);
+          } else if (state.mode == "RUN") {
             switch (e.key) {
               case " ":
                 console.log("step.");
                 step();
-                drawScreen(gl, c);
+                drawScreen(gl, gl_props, canvas);
                 break;
               case "Enter":
                 console.log("step.");
                 run = !run;
-                drawScreen(gl, c);
+                drawScreen(gl, gl_props, canvas);
                 break;
               case "r":
                 reset();
-                drawScreen(gl, c);
+                drawScreen(gl, gl_props, canvas);
                 break;
             }
           }
           if (e.key == "Tab") {
             e.preventDefault();
-            if (current_state == state.EDIT) {
-              current_state = state.RUN;
+            if (state.mode == "EDIT") {
               reset();
-            } else if (current_state == state.RUN) {
-              current_state = state.EDIT;
+              state.mode = "RUN";
+            } else if (state.mode == "RUN") {
               reset();
+              state.mode = "EDIT";
             }
-            drawScreen(gl, c);
+            drawScreen(gl, gl_props, canvas);
           }
 
           logMessage(`Key "${e.key}" pressed  [event: keydown]`);
@@ -793,8 +319,6 @@
           if (e.key == "Shift") {
             shift = false;
           }
-          // drawbox();
-          logMessage(`Key "${e.key}" released  [event: keyup]`);
         });
       };
 
@@ -921,8 +445,8 @@
       }
 
       function drawStack() {
-        for (var i = 0; i < stack.length; i++) {
-          hex = stack[i].toString(16).toUpperCase();
+        for (var i = 0; i < state.stack.length; i++) {
+          hex = state.stack[i].toString(16).toUpperCase();
           if (hex.length == 1) {
             hex = "0" + hex;
           }
@@ -931,9 +455,10 @@
       }
 
       function drawScreen(gl, gl_props, canvas) {
-        if (current_state == state.EDIT) {
+        offset_data = [];
+        if (state.mode == "EDIT") {
           drawEditScreen(canvas);
-        } else if (current_state == state.RUN) {
+        } else if (state.mode == "RUN") {
           drawRunScreen(canvas);
         }
         drawGL(canvas, gl_props);
@@ -944,7 +469,7 @@
         drawBoxVerticalDivide(21, 0, consoleY - 1);
         drawBox();
         drawText(2, 21, "DIR:");
-        drawChar(6, 21, direction.ascii);
+        drawChar(6, 21, 0);
         drawText(3, 2, "EDIT", (color = "white"));
         drawText(2, 23, "TAB:  Run Mode", (color = "gray"));
         for (var i = 0; i < consoleX; i++) {
@@ -1052,7 +577,7 @@
         drawBoxVerticalDivide(26, 0, consoleY - 1);
         drawBox();
         drawText(2, 21, "DIR:");
-        drawChar(6, 21, direction.ascii);
+        drawChar(6, 21, 0);
         drawText(2, 23, "TAB:  Edit Mode", (color = "gray"));
         // drawText(gl, 2, 24, "ENTER:Run/Stop", color='gray');
         drawText(2, 24, "SPACE:Step", (color = "gray"));
@@ -1077,7 +602,7 @@
         );
         drawText(44, 2, " CONSOLE ", (color = "black"), (highlight = "white"));
         drawText(28, 3, ">");
-        drawText(29, 3, output);
+        drawText(29, 3, state.output);
       }
     </script>
     <style>
