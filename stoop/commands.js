@@ -43,7 +43,7 @@ const commands = [
     "EMPTY",
     " ".charCodeAt(0),
     (state) => state,
-    (key, options) => key === " " || key === "delete" || key === "backspace"
+    (key, options) => key === " " || key === "Delete" || key === "Backspace"
   ),
   createCommand(
     "ZERO",
@@ -109,37 +109,37 @@ const commands = [
     "A",
     "A".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 10] }),
-    (key, options) => key === "A"
+    (key, options) => key === "A" || key === "a"
   ),
   createCommand(
     "B",
     "B".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 11] }),
-    (key, options) => key === "B"
+    (key, options) => key === "B" || key === "b"
   ),
   createCommand(
     "C",
     "C".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 12] }),
-    (key, options) => key === "C"
+    (key, options) => key === "C" || key === "c"
   ),
   createCommand(
     "D",
     "D".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 13] }),
-    (key, options) => key === "D"
+    (key, options) => (key === "D" || key === "d") && !options.shift
   ),
   createCommand(
     "E",
     "E".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 14] }),
-    (key, options) => key === "E"
+    (key, options) => key === "E" || key === "e"
   ),
   createCommand(
     "F",
     "F".charCodeAt(0),
     (state) => ({ ...state, stack: [...state.stack, 15] }),
-    (key, options) => key === "F"
+    (key, options) => key === "F" || key === "f"
   ),
   createCommand(
     "ADD",
@@ -197,12 +197,12 @@ const commands = [
   ),
   createCommand(
     "DUPLICATE",
-    "D".charCodeAt(0),
+    127,
     (state) => {
       const [a] = state.stack.slice(-1);
       return { ...state, stack: [...state.stack, a] };
     },
-    (key, options) => key === "d" && options.shift
+    (key, options) => key === "D"
   ),
   createCommand(
     "STACK EMPTY TEST",
