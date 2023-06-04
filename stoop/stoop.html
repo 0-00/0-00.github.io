@@ -490,7 +490,6 @@
 
         // Create and populate instance VBO
         gl.bindBuffer(gl.ARRAY_BUFFER, gl_props.instance_buffer);
-        console.log(gl_props.instance_buffer, offset_data);
         gl.bufferData(
           gl.ARRAY_BUFFER,
           new Float32Array(offset_data),
@@ -803,25 +802,20 @@
         textPosX,
         textPosY,
         char_index,
-        color = "white",
-        highlight = "black",
-        pixeloffsetX = 0,
-        pixeloffsetY = 0
+        options = {
+          inverted: false,
+          pixelOffsetX: 0,
+          pixelOffsetY: 0,
+        }
       ) {
-        gl.fillStyle = highlight;
-        // gl.fillRect(
-        //   (textPosX * fontsizeX + pixeloffsetX) * scale,
-        //   (textPosY * fontsizeY + pixeloffsetY) * scale,
-        //   scale * fontsizeX,
-        //   scale * fontsizeY
-        // );
-        // gl.fillStyle = color;
-
+        const { inverted, pixelOffsetX = 0, pixelOffsetY = 0 } = options;
+        const character = cp437[char_index];
+        const expectedValue = inverted ? 0 : 1;
         for (var y = 0; y < fontsizeY; y++) {
           for (var x = 0; x < fontsizeX; x++) {
-            if (cp437[char_index][x + y * fontsizeY] == 1) {
-              var posX = textPosX * fontsizeX + x + pixeloffsetX;
-              var posY = textPosY * fontsizeY + y + pixeloffsetY;
+            if (character[x + y * fontsizeY] === expectedValue) {
+              var posX = textPosX * fontsizeX + x + pixelOffsetX;
+              var posY = textPosY * fontsizeY + y + pixelOffsetY;
               addPixel(posX, posY);
             }
           }
@@ -836,14 +830,10 @@
         highlight = "black"
       ) {
         for (var i = 0; i < text.length; i++) {
-          drawChar(
-            textPosX + i,
-            textPosY,
-            text.charCodeAt(i),
-            color,
-            highlight,
-            (pixeloffsetX = -i * 2)
-          );
+          drawChar(textPosX + i, textPosY, text.charCodeAt(i), {
+            pixelOffsetX: -i * 2,
+            inverted: highlight === "white",
+          });
         }
       }
 
@@ -858,14 +848,10 @@
         for (var j = 0; j < lines.length; j++) {
           var line = lines[j];
           for (var i = 0; i < line.length; i++) {
-            drawChar(
-              textPosX + i,
-              textPosY + j,
-              line.charCodeAt(i),
-              color,
-              highlight,
-              (pixeloffsetX = -i * 2)
-            );
+            drawChar(textPosX + i, textPosY + j, line.charCodeAt(i), {
+              pixelOffsetX: -i * 2,
+              inverted: highlight === "white",
+            });
           }
         }
       }
@@ -924,13 +910,9 @@
           for (var j = 0; j < 16; j++) {
             // var rand = Math.floor(Math.random() * 256);
             if (cursorX == i && cursorY == j) {
-              drawChar(
-                3 + i,
-                3 + j,
-                tokens[i + j * boxX].ascii,
-                (color = "black"),
-                (highlight = "white")
-              );
+              drawChar(3 + i, 3 + j, tokens[i + j * boxX].ascii, {
+                inverted: true,
+              });
             } else {
               drawChar(3 + i, 3 + j, tokens[i + j * boxX].ascii);
             }
