@@ -53,12 +53,18 @@
         }
       }
 
-      var offset_data = [];
+      var pixels = new Set();
 
       const addPixel = (x, y) => {
         var newX = (2 * x) / (consoleX * fontsizeX) - 1;
         var newY = -((2 * y) / (consoleY * fontsizeY) - 1);
-        offset_data.push(newX, newY);
+        pixels.add(`${newX}_${newY}`);
+      };
+
+      const removePixel = (x, y) => {
+        var newX = (2 * x) / (consoleX * fontsizeX) - 1;
+        var newY = -((2 * y) / (consoleY * fontsizeY) - 1);
+        pixels.delete(`${newX}_${newY}`);
       };
 
       function initGL(canvas) {
@@ -115,6 +121,10 @@
           pixel_unit_y,
         ]);
 
+        const offset_data = Array.from(pixels)
+          .map((entry) => entry.split("_"))
+          .flat();
+
         var offset_array = new Float32Array(offset_data);
 
         gl_props.vertex_count = quad_vertices.length / 2;
@@ -154,6 +164,10 @@
       }
 
       function drawGL(canvas, gl_props) {
+        const offset_data = Array.from(pixels)
+          .map((entry) => entry.split("_"))
+          .flat();
+
         gl_props.instance_count = offset_data.length / 2;
 
         /*============= Clear canvas ================*/
@@ -322,17 +336,14 @@
         });
       };
 
-      function drawChar(
-        textPosX,
-        textPosY,
-        char_index,
-        options = {
-          inverted: false,
-          pixelOffsetX: 0,
-          pixelOffsetY: 0,
-        }
-      ) {
-        const { inverted, pixelOffsetX = 0, pixelOffsetY = 0 } = options;
+      function drawChar(textPosX, textPosY, char_index, options = {}) {
+        const {
+          inverted = false,
+          transparent = false,
+          pixelOffsetX = 0,
+          pixelOffsetY = 0,
+        } = options;
+
         const character = cp437[char_index];
         const expectedValue = inverted ? 0 : 1;
         for (var y = 0; y < fontsizeY; y++) {
@@ -341,6 +352,10 @@
               var posX = textPosX * fontsizeX + x + pixelOffsetX;
               var posY = textPosY * fontsizeY + y + pixelOffsetY;
               addPixel(posX, posY);
+            } else if (!transparent) {
+              var posX = textPosX * fontsizeX + x + pixelOffsetX;
+              var posY = textPosY * fontsizeY + y + pixelOffsetY;
+              removePixel(posX, posY);
             }
           }
         }
@@ -455,7 +470,7 @@
       }
 
       function drawScreen(gl, gl_props, canvas) {
-        offset_data = [];
+        pixels = new Set();
         if (state.mode == "EDIT") {
           drawEditScreen(canvas);
         } else if (state.mode == "RUN") {
